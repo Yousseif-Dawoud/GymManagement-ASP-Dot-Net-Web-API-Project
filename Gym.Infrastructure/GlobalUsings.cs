@@ -1,0 +1,9 @@
+﻿global using Gym.Domain.Entities;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using System.Linq.Expressions;
+global using Gym.Application.Interfaces.IRepositories;
+global using Gym.Infrastructure.Data;
+global using Gym.Infrastructure.Repositories;
+global using Gym.Application.Interfaces.IUnitOfWork;
+global using System.Collections.Concurrent;
