@@ -11,9 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gym.Infrastructure", "Gym.I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gym.API", "Gym.API\Gym.API.csproj", "{6306B488-2D08-401E-BEC9-0417441178E6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{D29C0725-A2B1-45ED-AD2F-CD2497C98E00}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BRD", "BRD", "{F4A1C3B9-DDAB-4FDE-8D9C-9730C0941A40}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project_BRD", "Project_BRD", "{A2A4EA1B-FEDF-4E87-BCF0-CEB1DF8B6398}"
 	ProjectSection(SolutionItems) = preProject
 		BusinessRequirementsDocument.txt = BusinessRequirementsDocument.txt
 	EndProjectSection
@@ -79,9 +77,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{F4A1C3B9-DDAB-4FDE-8D9C-9730C0941A40} = {D29C0725-A2B1-45ED-AD2F-CD2497C98E00}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {54E9907F-3D11-4538-A4D0-3B567703B093}
