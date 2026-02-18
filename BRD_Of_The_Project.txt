@@ -1,0 +1,172 @@
+ 
+GYM MANAGEMET
+Business Requirements Document
+ 
+?
+1?? Minimal Business Features (MVP Scope)
+This version is what a small–medium gym needs on day one.
+________________________________________
+?? Member Management (Essential)
+?	Add / edit / deactivate members
+?	Membership start & end dates
+?	Membership status (Active / Expired)
+?	Basic profile data (name, phone, email)
+________________________________________
+??? Trainer Management (Basic)
+?	Add trainers
+?	Assign trainer to a session
+?	Trainer availability (simple time ranges)
+________________________________________
+?? Sessions (Classes)
+?	Create session (date, time, capacity)
+?	Assign trainer
+?	Session status (Open / Full)
+________________________________________
+?? Booking
+?	Member books a session
+?	Prevent overbooking
+?	Cancel booking
+________________________________________
+?? Membership Plans
+?	Define plans (Monthly / Yearly)
+?	Max sessions per plan
+?	Price
+________________________________________
+?? Authentication & Roles
+?	Login
+?	Roles:
+o	Admin
+o	Trainer
+o	Member
+________________________________________
+?? Very Basic Reports
+?	Active members count
+?	Sessions per day
+?	Bookings per session
+________________________________________
+2?? Final Tech Stack
+Platform
+?	.NET 10
+?	ASP.NET Core Web API
+________________________________________
+Architecture
+?	Onion Architecture
+?	Clear separation between Domain, Application, Infrastructure, and API layers
+________________________________________
+Data Access
+?	Entity Framework Core
+?	SQL Server
+?	Code-First approach
+?	Fluent API for entity configuration
+________________________________________
+Mapping
+?	AutoMapper
+?	Feature-based mapping profiles
+________________________________________
+Validation
+?	FluentValidation
+?	Request-level validation integrated into the pipeline
+________________________________________
+Persistence Patterns
+?	Repository Pattern
+?	Unit of Work
+?	One DbContext acting as a single transactional boundary
+________________________________________
+Authentication & Authorization
+?	ASP.NET Core Identity
+?	JWT authentication
+?	Role-based authorization
+________________________________________
+Logging
+?	ILogger<T>
+?	Structured application and request logging
+?	Centralized logging via middleware
+________________________________________
+Error Handling
+?	Global exception handling middleware
+?	Consistent API response model
+________________________________________
+API Documentation
+?	Swagger / OpenAPI
+?	JWT support inside Swagger UI
+
+
+
+
+
+
+
+
+
+3?? Project Structure (Onion)
+ 
+4?? Core Domain Entities
+Member
+?	Id
+?	FullName
+?	Phone
+?	Email
+?	MembershipPlanId
+?	StartDate
+?	EndDate
+?	Status
+Trainer
+?	Id
+?	FullName
+?	Specialty
+Session
+?	Id
+?	Title
+?	Date
+?	StartTime
+?	Capacity
+?	TrainerId
+Booking
+?	Id
+?	MemberId
+?	SessionId
+?	BookingDate
+MembershipPlan
+?	Id
+?	Name
+?	Price
+?	MaxSessionsPerMonth
+________________________________________
+
+5?? Repository & Unit of Work Design
+Generic Repository
+?	GetByIdAsync
+?	GetAllAsync
+?	AddAsync
+?	Update
+?	Remove
+
+Unit of Work
+?	Members
+?	Trainers
+?	Sessions
+?	Bookings
+?	MembershipPlans
+?	SaveChangesAsync
+________________________________________
+6?? FluentValidation Strategy
+?	Validators per request model
+?	Centralized rule definitions
+?	Automatic execution in the request pipeline
+________________________________________
+7?? AutoMapper Strategy
+?	One mapping profile per feature
+?	Clear Entity ? DTO transformations
+?	Mapping focused purely on data shape
+________________________________________
+8?? Logging Strategy (ILogger)
+?	Application lifecycle logging
+?	Request and response logging via middleware
+?	Error and exception logging with structured context
+________________________________________
+9?? Why This Setup Works
+?	Uses modern .NET 10
+?	Follows a clean, scalable architecture
+?	Simple enough for an MVP and strong enough for production
+?	Easy to extend with additional modules and integrations
+

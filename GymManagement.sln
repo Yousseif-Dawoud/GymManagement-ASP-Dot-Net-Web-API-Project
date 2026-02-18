@@ -11,9 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gym.Infrastructure", "Gym.I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gym.API", "Gym.API\Gym.API.csproj", "{6306B488-2D08-401E-BEC9-0417441178E6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project_BRD", "Project_BRD", "{A2A4EA1B-FEDF-4E87-BCF0-CEB1DF8B6398}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Items", "Project Items", "{9A3C72F0-D09E-4440-B915-DF56C6C98E37}"
 	ProjectSection(SolutionItems) = preProject
-		BusinessRequirementsDocument.txt = BusinessRequirementsDocument.txt
+		BRD_Of_The_Project.txt = BRD_Of_The_Project.txt
 	EndProjectSection
 EndProject
 Global
