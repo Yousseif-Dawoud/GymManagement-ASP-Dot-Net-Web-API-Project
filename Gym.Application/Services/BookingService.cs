@@ -105,4 +105,42 @@ public sealed class BookingService : IBookingService
         await _uow.SaveChangesAsync(ct);
     }
     // -----------------------------------------------------------------------------------------------
+
+
+
+
+    // Implement the method to retrieve all bookings and map them to a list of booking list items.
+    public async Task<IReadOnlyList<BookingListItem>> GetAllBookingAsync(CancellationToken ct = default) 
+    {
+        // 1. Retrieve all booking entities from the database using the unit of work pattern.
+        var bookings = await _uow.Bookings.GetAllAsync(ct);
+
+
+        // 2. Retrieve all members to map the booking entities to the corresponding member 
+        var members = await _uow.Members.GetAllAsync(ct);
+        if (members is null)
+            throw new BusinessRuleException("No members found.");
+
+        // 3. Retrieve all sessions to map the booking entities to the corresponding session
+        var sessions = await _uow.Sessions.GetAllAsync(ct);
+        if(sessions is null)
+            throw new BusinessRuleException("No sessions found.");
+
+
+        // 4. Map the booking entities to a list of booking list items,including member names and session titles.
+        var memberNames = members.ToDictionary(m => m.Id, m => m.FullName);
+        var sessionTitles = sessions.ToDictionary(s => s.Id, s => s.Title);
+
+
+        // 5. Return the list of booking list items to the caller.
+        return bookings.Select(b => new BookingListItem(
+           Id: b.Id,
+           MemberId: b.MemberId,
+           MemberName: memberNames.TryGetValue(b.MemberId, out var mn) ? mn : string.Empty,
+           SessionId: b.SessionId,
+           SessionTitle: sessionTitles.TryGetValue(b.SessionId, out var st) ? st : string.Empty,
+           BookingDate: b.BookingDate
+       )).ToList();
+    }
+    // -----------------------------------------------------------------------------------------------
 }

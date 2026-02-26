@@ -17,4 +17,7 @@ public interface IBookingService
 
 
     // 3. GetAllBooking
+    Task<IReadOnlyList<BookingListItem>> GetAllBookingAsync(CancellationToken ct = default);
+
+    
 }
