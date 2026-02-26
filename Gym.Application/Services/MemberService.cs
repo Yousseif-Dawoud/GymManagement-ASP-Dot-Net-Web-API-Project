@@ -72,9 +72,27 @@ public sealed class MemberService : IMemberService
 
     // Get A Member By Id And Return A MemberResponse DTO 
     // -----------------------------------------------------------------------------------------------
-    public Task<MemberResponse> GetByIdAsync(int id, CancellationToken ct = default)
+    public async Task<MemberResponse> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        // 1. Retrieve the Member entity with the specified id from the database
+        var member = await _uow.Members.GetByIdAsync(id, ct);
+
+
+        // 2. If the Member entity is not found, throw a NotFoundException
+        if(member is null)
+            throw new NotFoundException($"Member with id {id} was not found.");
+
+
+        // 3. Retrieve the name of the MembershipPlan associated with the Member
+        var plan = await _uow.MembershipPlans.GetByIdAsync(member.MembershipPlanId, ct);
+
+
+        // 4. Handel The PlanName If The Plan Name Is Null Set It To "Unknown Plan"
+        var planName = plan is not null ? plan.Name : "Unknown Plan";
+
+
+        // 5. Map the Member entity to a MemberResponse DTO and return it
+        return MapToResponse(member, planName);
     }
     // -----------------------------------------------------------------------------------------------
     public Task<MemberResponse> GetProfileAsync(int id, CancellationToken ct = default)
