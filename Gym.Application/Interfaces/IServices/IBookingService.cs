@@ -1,4 +1,6 @@
 ﻿
+using Gym.Application.DTOs.Bookings;
+
 namespace Gym.Application.Interfaces.IServices;
 
 public interface IBookingService
@@ -7,6 +9,8 @@ public interface IBookingService
 
 
     // 1. CreateBooking
+    Task<BookingResponse> CreateBookingAsync(CreateBookingRequest request, CancellationToken ct = default);
+
     // 2. CancelBooking
     // 3. GetAllBooking
 }

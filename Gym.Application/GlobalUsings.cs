@@ -6,3 +6,4 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Gym.Application.DTOs.Members;
 global using Gym.Application.Exceptions;
 global using Gym.Application.Interfaces.IUnitOfWork;
+global using Gym.Application.DTOs.Bookings;
