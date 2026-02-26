@@ -12,6 +12,7 @@ public sealed class MemberService : IMemberService
     // -----------------------------------------------------------------------------------------------
     public async Task<MemberResponse> CreateAsync(CreateMemberRequest request, CancellationToken ct = default)
     {
+        // 1. Validate the MembershipPlanId exists
         var plan = await _uow.MembershipPlans.GetByIdAsync(request.MembershipPlanId, ct);
 
         if(plan is null)
@@ -19,6 +20,7 @@ public sealed class MemberService : IMemberService
             throw new NotFoundException($"MembershipPlan with id {request.MembershipPlanId} was not found.");
         }
 
+        // 2. Create a new Member entity using the request data
         var member = new Member(
             fullName: request.FullName,
             phone: request.Phone,
@@ -28,14 +30,20 @@ public sealed class MemberService : IMemberService
             membershipPlanId: request.MembershipPlanId
         );
 
+
+        // 3. Add the new Member to the database and save changes
         await _uow.Members.AddAsync(member,ct );
         await _uow.SaveChangesAsync( ct );
 
+
+        // 4. Map the created Member entity to a MemberResponse DTO and return it
         return MapToResponse(member, planName: plan.Name);
     }
     // -----------------------------------------------------------------------------------------------
 
 
+
+    // Get All Members And Return A List Of MemberListItem DTOs 
     public Task<IReadOnlyList<MemberListItem>> GetAllMembers(CancellationToken ct = default)
     {
         throw new NotImplementedException();
