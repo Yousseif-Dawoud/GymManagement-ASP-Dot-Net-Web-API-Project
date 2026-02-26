@@ -8,6 +8,9 @@ public sealed class MemberService : IMemberService
     private readonly IUnitOfWork _uow;
     public MemberService( IUnitOfWork uow) => _uow = uow;
 
+
+
+
     // Create A New Member From The Request DTO Data And Return The Response DTO Data
     // -----------------------------------------------------------------------------------------------
     public async Task<MemberResponse> CreateAsync(CreateMemberRequest request, CancellationToken ct = default)
@@ -43,17 +46,37 @@ public sealed class MemberService : IMemberService
 
 
 
-    // Get All Members And Return A List Of MemberListItem DTOs 
-    public Task<IReadOnlyList<MemberListItem>> GetAllMembers(CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
 
+    // Get All Members And Return A List Of MemberListItem DTOs 
+    // -----------------------------------------------------------------------------------------------
+    public async Task<IReadOnlyList<MemberListItem>> GetAllMembers(CancellationToken ct = default)
+    {
+        // 1. Retrieve all Member entities from the database
+        var members = await _uow.Members.GetAllAsync(ct);
+
+
+        // 2. Map each Member entity to a MemberListItem DTO and return the list of DTOs
+        return members
+               .Select(m => new MemberListItem(
+                   Id: m.Id,
+                   FullName: m.FullName,
+                   Phone: m.Phone,
+                   Status: m.Status.ToString()
+               ))
+               .ToList();
+    }
+    // -----------------------------------------------------------------------------------------------
+
+
+
+
+    // Get A Member By Id And Return A MemberResponse DTO 
+    // -----------------------------------------------------------------------------------------------
     public Task<MemberResponse> GetByIdAsync(int id, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
-
+    // -----------------------------------------------------------------------------------------------
     public Task<MemberResponse> GetProfileAsync(int id, CancellationToken ct = default)
     {
         throw new NotImplementedException();
