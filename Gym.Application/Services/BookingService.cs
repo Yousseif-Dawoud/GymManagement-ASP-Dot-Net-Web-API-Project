@@ -9,7 +9,6 @@ public sealed class BookingService : IBookingService
 
 
 
-
     // Implement the method to create a new booking based on the incoming request data.
     // -----------------------------------------------------------------------------------------------
     public async Task<BookingResponse> CreateBookingAsync(CreateBookingRequest request, CancellationToken ct = default)
@@ -76,6 +75,34 @@ public sealed class BookingService : IBookingService
                 CreatedAt: booking.CreatedAt,
                 UpdatedAt: booking.UpdatedAt
         );
+    }
+    // -----------------------------------------------------------------------------------------------
+
+
+
+
+    // Implement the method to cancel an existing booking based on the provided booking ID.
+    // -----------------------------------------------------------------------------------------------
+    public async Task CancelAsync(int bookingId, CancellationToken ct = default)
+    {
+        // 1. Retrieve the booking entity from the database using the provided booking ID.
+        var booking = await _uow.Bookings.GetByIdAsync(bookingId, ct);
+
+
+
+        // 2. If the booking does not exist, throw a NotFoundException 
+        if (booking is null)
+            throw new NotFoundException($"Booking with id {bookingId} was not found.");
+
+
+
+        // 3. If the booking exists, delete it from the database using the unit of work pattern.
+         _uow.Bookings.Remove(booking);
+
+
+
+        // 4. Commit the transaction to persist the changes to the database.
+        await _uow.SaveChangesAsync(ct);
     }
     // -----------------------------------------------------------------------------------------------
 }

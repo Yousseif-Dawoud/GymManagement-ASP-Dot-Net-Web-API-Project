@@ -11,6 +11,10 @@ public interface IBookingService
     // 1. CreateBooking
     Task<BookingResponse> CreateBookingAsync(CreateBookingRequest request, CancellationToken ct = default);
 
+
     // 2. CancelBooking
+    Task CancelAsync(int bookingId, CancellationToken ct = default);
+
+
     // 3. GetAllBooking
 }
