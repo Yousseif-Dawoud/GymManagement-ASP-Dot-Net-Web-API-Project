@@ -8,3 +8,4 @@ global using Gym.Application.Exceptions;
 global using Gym.Application.Interfaces.IUnitOfWork;
 global using Gym.Application.DTOs.Bookings;
 global using Gym.Application.DTOs.MembershipPlans;
+global using Gym.Application.DTOs.Sessions;
