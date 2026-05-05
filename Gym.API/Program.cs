@@ -1,4 +1,6 @@
 
+using Gym.API.Middleware;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ✅ Add Controllers (مهم جداً)
@@ -47,6 +49,11 @@ if (app.Environment.IsDevelopment())
     });
 
 }
+
+
+// ✅ Global Exception Handling Middleware
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
 
 app.UseHttpsRedirection();
 
