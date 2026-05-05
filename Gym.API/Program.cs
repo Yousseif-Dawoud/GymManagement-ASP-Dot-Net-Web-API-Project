@@ -1,34 +1,52 @@
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Register services before Build
-builder.Services.AddOpenApi();
+// ✅ Add Controllers (مهم جداً)
+builder.Services.AddControllers();
 
 
+// ✅ Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Gym API",
+        Version = "v1",
+        Description = "Clean Architecture API"
+    });
+});
 
-// Register DbContext with SQL Server provider and connection string from  appsettings.json
+
+// ✅ DbContext
 builder.Services.AddDbContext<GymDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-// Register application services with the dependency injection container 
-// AddApplication => Contains All the services related to the application layer
+// ✅ Application Layer
 builder.Services.AddApplication();
 
 
-// Register Unit of Work in DI (API)
+// ✅ Unit of Work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 var app = builder.Build();
 
-// Configure pipeline
-if (app.Environment.IsDevelopment())
+
+// ✅ Middleware
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.MapOpenApi();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Gym API V1");
+    c.RoutePrefix = "swagger"; // http://localhost:xxxx/swagger
+});
 
 app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+// ✅ مهم جداً
+app.MapControllers();
+
 app.Run();
