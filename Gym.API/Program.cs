@@ -6,15 +6,17 @@ builder.Services.AddControllers();
 
 
 // ✅ Swagger
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Gym API",
+        Title = "Gym Management API Project",
         Version = "v1",
         Description = "Clean Architecture API"
     });
+
+    // 🔥 هنا المكان الصح
+    options.UseInlineDefinitionsForEnums();
 });
 
 
@@ -35,12 +37,16 @@ var app = builder.Build();
 
 
 // ✅ Middleware
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Gym API V1");
-    c.RoutePrefix = "swagger"; // http://localhost:xxxx/swagger
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Gym API V1");
+        c.RoutePrefix = "swagger"; // http://localhost:xxxx/swagger
+    });
+
+}
 
 app.UseHttpsRedirection();
 
