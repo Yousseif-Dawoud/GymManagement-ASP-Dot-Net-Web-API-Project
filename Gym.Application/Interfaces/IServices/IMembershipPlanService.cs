@@ -20,5 +20,5 @@ public interface IMembershipPlanService
 
 
     // 3. GetAllMembershipPlans
-    Task<IReadOnlyList<MembershipPlanListItem>> GetAllMembershipPlans(CancellationToken ct = default);
+    //Task<IReadOnlyList<MembershipPlanListItem>> GetAllMembershipPlans(CancellationToken ct = default);
 }

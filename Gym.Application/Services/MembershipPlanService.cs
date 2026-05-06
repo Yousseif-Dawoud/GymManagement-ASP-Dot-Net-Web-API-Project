@@ -9,7 +9,7 @@ public sealed class MembershipPlanService : IMembershipPlanService
 
 
 
-    // Implement the CreateMembershipPlanAsync method to create a new membership.
+    // Implement the Create Membership Plan Async method to create a new membership.
     // -----------------------------------------------------------------------------------------------
     public async Task<MembershipPlanResponse> CreateMembershipPlanAsync(CreateMembershipPlanRequest request, CancellationToken ct = default)
     {
@@ -29,8 +29,6 @@ public sealed class MembershipPlanService : IMembershipPlanService
         // 3. return a MembershipPlanResponse with the details of the created plan.
         return MapToResponse(plan);
     }
-    // -----------------------------------------------------------------------------------------------
-
 
 
 
@@ -50,30 +48,29 @@ public sealed class MembershipPlanService : IMembershipPlanService
         // 3. if the plan is found, return a MembershipPlanResponse with the details of the plan.
         return MapToResponse(plan);
     }
-    // -----------------------------------------------------------------------------------------------
 
 
 
 
-    // Implement the GetAllMembershipPlans method to retrieve all membership plans.
-    // -----------------------------------------------------------------------------------------------
-    public async Task<IReadOnlyList<MembershipPlanListItem>> GetAllMembershipPlans(CancellationToken ct = default)
-    {
-        // 1. retrieve all membership plans from the repository.
-        var plans = await _uow.MembershipPlans.GetAllAsync(ct);
+    //// Implement the GetAllMembershipPlans method to retrieve all membership plans.
+    //// -----------------------------------------------------------------------------------------------
+    //public async Task<IReadOnlyList<MembershipPlanListItem>> GetAllMembershipPlans(CancellationToken ct = default)
+    //{
+    //    // 1. retrieve all membership plans from the repository.
+    //    var plans = await _uow.MembershipPlans.GetAllAsync(ct);
 
 
-        // 2. map the retrieved plans to a list of MembershipPlanListItem and return it.
-        return plans
-             .Select(p => new MembershipPlanListItem(
-                 Id: p.Id,
-                 Name: p.Name,
-                 Price: p.Price,
-                 MaxSessionsPerMonth: p.MaxSessionsPerMonth
-             ))
-             .ToList();
-    }
-    // -----------------------------------------------------------------------------------------------
+    //    // 2. map the retrieved plans to a list of MembershipPlanListItem and return it.
+    //    return plans
+    //         .Select(p => new MembershipPlanListItem(
+    //             Id: p.Id,
+    //             Name: p.Name,
+    //             Price: p.Price,
+    //             MaxSessionsPerMonth: p.MaxSessionsPerMonth
+    //         ))
+    //         .ToList();
+    //}
+    //// -----------------------------------------------------------------------------------------------
 
 
 

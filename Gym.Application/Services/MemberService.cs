@@ -10,6 +10,36 @@ public sealed class MemberService : IMemberService
     public MemberService( IUnitOfWork uow) => _uow = uow;
 
 
+
+    // Create A New Member From The Request DTO Data And Return The Response DTO Data
+    // -----------------------------------------------------------------------------------------------
+    public async Task<MemberResponse> CreateAsync(CreateMemberRequest request, CancellationToken ct = default)
+    {
+        var plan = await _uow.MembershipPlans.GetByIdAsync(request.MembershipPlanId, ct);
+
+        if(plan is null)
+            throw new BadRequestException($"Membership plan with id {request.MembershipPlanId} does not exist.");
+
+
+        var emailNormalized = request.Email.Trim().ToLowerInvariant();
+
+        var member = new Member(
+            fullName: request.FullName,
+            phone: request.Phone,
+            email: emailNormalized,
+            startDate: request.MembershipStartDate,
+            endDate: request.MembershipEndDate,
+            membershipPlanId: request.MembershipPlanId
+        );
+
+        await _uow.Members.AddAsync(member, ct);
+        await _uow.SaveChangesAsync(ct);
+
+        return MapToResponse(member, planName: plan.Name);
+    }
+
+
+
     // Get All Members And Return A List Of MemberListItem DTOs 
     // ---------------------------------------------------------
     public async Task<IReadOnlyList<MemberListItem>> GetAllMembers(CancellationToken ct = default)
@@ -61,38 +91,7 @@ public sealed class MemberService : IMemberService
 
 
 
-    // Create A New Member From The Request DTO Data And Return The Response DTO Data
-    // -----------------------------------------------------------------------------------------------
-    public async Task<MemberResponse> CreateAsync(CreateMemberRequest request, CancellationToken ct = default)
-    {
-        // 1. Validate the MembershipPlanId exists
-        var plan = await _uow.MembershipPlans.GetByIdAsync(request.MembershipPlanId, ct);
-
-        if(plan is null)
-        {
-            throw new NotFoundException($"MembershipPlan with id {request.MembershipPlanId} was not found.");
-        }
-
-        // 2. Create a new Member entity using the request data
-        var member = new Member(
-            fullName: request.FullName,
-            phone: request.Phone,
-            email: request.Email,
-            startDate: request.MembershipStartDate,
-            endDate: request.MembershipEndDate,
-            membershipPlanId: request.MembershipPlanId
-        );
-
-
-        // 3. Add the new Member to the database and save changes
-        await _uow.Members.AddAsync(member,ct );
-        await _uow.SaveChangesAsync( ct );
-
-
-        // 4. Map the created Member entity to a MemberResponse DTO and return it
-        return MapToResponse(member, planName: plan.Name);
-    }
-    // -----------------------------------------------------------------------------------------------
+    
 
 
     // Get A Member's Profile By Id And Return A MemberResponse DTO
