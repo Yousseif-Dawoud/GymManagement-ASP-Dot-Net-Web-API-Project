@@ -10,6 +10,55 @@ public sealed class MemberService : IMemberService
     public MemberService( IUnitOfWork uow) => _uow = uow;
 
 
+    // Get All Members And Return A List Of MemberListItem DTOs 
+    // ---------------------------------------------------------
+    public async Task<IReadOnlyList<MemberListItem>> GetAllMembers(CancellationToken ct = default)
+    {
+        // 1. Retrieve all Member entities from the database
+        var members = await _uow.Members.GetAllAsync(ct);
+
+
+        // 2. Map each Member entity to a MemberListItem DTO and return the list of DTOs
+        return members
+               .Select(m => new MemberListItem(
+                   Id: m.Id,
+                   FullName: m.FullName,
+                   Phone: m.Phone,
+                   Status: m.Status.ToString()
+               ))
+               .ToList();
+    }
+
+
+
+    // Get A Member By Id And Return A MemberResponse DTO 
+    // ---------------------------------------------------
+    public async Task<MemberResponse> GetByIdAsync(int id, CancellationToken ct = default)
+    {
+        if (id <= 0)
+            throw new BadRequestException("Id must be a positive integer.");
+
+        // 1. Retrieve the Member entity with the specified id from the database
+        var member = await _uow.Members.GetByIdAsync(id, ct);
+
+
+        // 2. If the Member entity is not found, throw a NotFoundException
+        if (member is null)
+            throw new NotFoundException($"Member with id {id} was not found.");
+
+
+        // 3. Retrieve the name of the MembershipPlan associated with the Member
+        var plan = await _uow.MembershipPlans.GetByIdAsync(member.MembershipPlanId, ct);
+
+
+        // 4. Handel The PlanName If The Plan Name Is Null Set It To "Unknown Plan"
+        var planName = plan is not null ? plan.Name : "Unknown Plan";
+
+
+        // 5. Map the Member entity to a MemberResponse DTO and return it
+        return MapToResponse(member, planName);
+    }
+
 
 
     // Create A New Member From The Request DTO Data And Return The Response DTO Data
@@ -46,60 +95,6 @@ public sealed class MemberService : IMemberService
     // -----------------------------------------------------------------------------------------------
 
 
-
-
-    // Get All Members And Return A List Of MemberListItem DTOs 
-    // -----------------------------------------------------------------------------------------------
-    public async Task<IReadOnlyList<MemberListItem>> GetAllMembers(CancellationToken ct = default)
-    {
-        // 1. Retrieve all Member entities from the database
-        var members = await _uow.Members.GetAllAsync(ct);
-
-
-        // 2. Map each Member entity to a MemberListItem DTO and return the list of DTOs
-        return members
-               .Select(m => new MemberListItem(
-                   Id: m.Id,
-                   FullName: m.FullName,
-                   Phone: m.Phone,
-                   Status: m.Status.ToString()
-               ))
-               .ToList();
-    }
-    // -----------------------------------------------------------------------------------------------
-
-
-
-
-    // Get A Member By Id And Return A MemberResponse DTO 
-    // -----------------------------------------------------------------------------------------------
-    public async Task<MemberResponse> GetByIdAsync(int id, CancellationToken ct = default)
-    {
-        // 1. Retrieve the Member entity with the specified id from the database
-        var member = await _uow.Members.GetByIdAsync(id, ct);
-
-
-        // 2. If the Member entity is not found, throw a NotFoundException
-        if(member is null)
-            throw new NotFoundException($"Member with id {id} was not found.");
-
-
-        // 3. Retrieve the name of the MembershipPlan associated with the Member
-        var plan = await _uow.MembershipPlans.GetByIdAsync(member.MembershipPlanId, ct);
-
-
-        // 4. Handel The PlanName If The Plan Name Is Null Set It To "Unknown Plan"
-        var planName = plan is not null ? plan.Name : "Unknown Plan";
-
-
-        // 5. Map the Member entity to a MemberResponse DTO and return it
-        return MapToResponse(member, planName);
-    }
-    // -----------------------------------------------------------------------------------------------
-
-
-
-
     // Get A Member's Profile By Id And Return A MemberResponse DTO
     // -----------------------------------------------------------------------------------------------
     public async Task<MemberResponse> GetProfileAsync(int id, CancellationToken ct = default)
@@ -125,8 +120,6 @@ public sealed class MemberService : IMemberService
         return MapToResponse(member, planName);
 
     }
-    // -----------------------------------------------------------------------------------------------
-
 
 
 

@@ -4,3 +4,8 @@ global using Gym.Application.Interfaces.IUnitOfWork;
 global using Gym.Infrastructure.UnitOfWork;
 global using Gym.Application;
 global using Microsoft.OpenApi;
+global using Microsoft.AspNetCore.Mvc;
+global using Gym.Application.Interfaces.IServices;
+global using Gym.Application.DTOs.Members;
+global using Swashbuckle.AspNetCore.Filters;
+global using Gym.API.Swagger.Examples.Members;

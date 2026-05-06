@@ -1,11 +1,14 @@
 
 using Gym.API.Middleware;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ✅ Add Controllers (مهم جداً)
 builder.Services.AddControllers();
 
+// ✅ Global Exception Middleware
+builder.Services.AddTransient<GlobalExceptionMiddleware>();
 
 // ✅ Swagger
 builder.Services.AddSwaggerGen(options =>
@@ -17,10 +20,14 @@ builder.Services.AddSwaggerGen(options =>
         Description = "Clean Architecture API"
     });
 
-    // 🔥 هنا المكان الصح
     options.UseInlineDefinitionsForEnums();
 });
 
+// ✅ IMPORTANT MISSING LINE
+builder.Services.AddSwaggerExamples();
+
+// 🔥 HERE (مكان Swagger Examples الصح)
+builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
 // ✅ DbContext
 builder.Services.AddDbContext<GymDbContext>(options =>
@@ -37,6 +44,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
+// ✅ Global Exception Handling Middleware
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 // ✅ Middleware
 if (app.Environment.IsDevelopment())
@@ -49,10 +58,6 @@ if (app.Environment.IsDevelopment())
     });
 
 }
-
-
-// ✅ Global Exception Handling Middleware
-app.UseMiddleware<GlobalExceptionMiddleware>();
 
 
 app.UseHttpsRedirection();
