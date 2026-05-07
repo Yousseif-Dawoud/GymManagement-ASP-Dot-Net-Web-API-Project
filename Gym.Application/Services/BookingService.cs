@@ -1,4 +1,6 @@
 ﻿
+using Gym.Domain.Exceptions;
+
 namespace Gym.Application.Services;
 
 public sealed class BookingService : IBookingService

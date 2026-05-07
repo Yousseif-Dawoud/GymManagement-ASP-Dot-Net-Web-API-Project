@@ -31,8 +31,8 @@ public sealed class MemberService : IMemberService
             fullName: request.FullName,
             phone: request.Phone,
             email: emailNormalized,
-            startDate: request.MembershipStartDate,
-            endDate: request.MembershipEndDate,
+            membershipStartDate: request.MembershipStartDate,
+            membershipEndDate: request.MembershipEndDate,
             membershipPlanId: request.MembershipPlanId
         );
 
@@ -124,11 +124,7 @@ public sealed class MemberService : IMemberService
         );
 
 
-        //  Save the changes to the database
-        _uow.Members.Update(member);
-
-
-        //  Save the changes to the database
+        //  Save the changes to the database , utomatically the UpdatedAt property .
         await _uow.SaveChangesAsync(ct);
 
 
@@ -191,9 +187,7 @@ public sealed class MemberService : IMemberService
     // This Method Is Used To Ensure That The Email Is Unique In The Database
     private async Task EnsureEmailIsUniqueAsync(CreateMemberRequest request, string emailNormalized, CancellationToken ct)
     {
-        var allMembers = await _uow.Members.GetAllAsync(ct);
-
-        var exists = allMembers.Any(m => m.Email != null && m.Email == emailNormalized);
+        var exists = await _uow.Members.ExistsAsync(m => m.Email == emailNormalized, ct);
 
         if (exists)
             throw new ConflictException($"Email '{request.Email}' is already used.");

@@ -15,7 +15,7 @@ public sealed class MembersController : ControllerBase
 
     // This Endpoint Make Create A New Member And Return The Created Member Details DTO.
     // --------------------------------------------------------------------------------
-    [HttpPost("Create-Member")]
+    [HttpPost]
     [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<MemberResponse>> CreateMember([FromBody] CreateMemberRequest request, CancellationToken ct = default)
     {

@@ -1,4 +1,5 @@
 ﻿
+
 namespace Gym.Domain.Entities;
 
 public class Member : BaseEntity
@@ -16,18 +17,24 @@ public class Member : BaseEntity
     private readonly List<Booking> _bookings = new();
     public IReadOnlyCollection<Booking> Bookings => _bookings;
 
-    private Member() { }
-
     public Member(
-        string fullName,
-        string phone,
-        string email,
-        DateOnly startDate,
-        DateOnly endDate,
-        int membershipPlanId
-        )
-        => (FullName, Phone, Email, MembershipStartDate, MembershipEndDate, MembershipPlanId, Status)
-        = (fullName, phone, email, startDate, endDate, membershipPlanId, MembershipStatus.Active);
+    string fullName,
+    string phone,
+    string email,
+    DateOnly membershipStartDate,
+    DateOnly membershipEndDate,
+    int membershipPlanId)
+    {
+        ValidateMembershipDates( membershipStartDate, membershipEndDate);
+
+        FullName = fullName;
+        Phone = phone;
+        Email = email;
+        MembershipStartDate = membershipStartDate;
+        MembershipEndDate = membershipEndDate;
+        MembershipPlanId = membershipPlanId;
+        Status = MembershipStatus.Active;
+    }
 
     public void Update(
     string fullName,
@@ -37,9 +44,11 @@ public class Member : BaseEntity
     DateOnly membershipEndDate,
     int membershipPlanId)
     {
+        ValidateMembershipDates(membershipStartDate, membershipEndDate);
+
         FullName = fullName;
         Phone = phone;
-        Email = email;
+        Email = email.Trim().ToLowerInvariant();
         MembershipStartDate = membershipStartDate;
         MembershipEndDate = membershipEndDate;
         MembershipPlanId = membershipPlanId;
@@ -48,9 +57,20 @@ public class Member : BaseEntity
     }
 
     public void ExpireMembership()
-        {
+    {
             Status = MembershipStatus.Expired;
             SetUpdated();
-        }
+    }
+
+    // Private Validation Method
+    // =========================
+    private static void ValidateMembershipDates(
+        DateOnly startDate,
+        DateOnly endDate)
+    {
+        if (endDate < startDate)
+            throw new BusinessRuleException(
+                "Membership end date cannot be earlier than start date.");
+    }
 }
 

@@ -30,8 +30,13 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
 
 
 
+    // Check if any entity exists that matches a given predicate
+    public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate,CancellationToken ct = default)
+    => await _dbSet.AnyAsync(predicate, ct);
+
+
     // Add a new entity to the database using AddAsync
-    public  Task AddAsync(TEntity entity , CancellationToken ct = default)
+    public Task AddAsync(TEntity entity , CancellationToken ct = default)
     => _dbSet.AddAsync(entity, ct).AsTask();
 
 

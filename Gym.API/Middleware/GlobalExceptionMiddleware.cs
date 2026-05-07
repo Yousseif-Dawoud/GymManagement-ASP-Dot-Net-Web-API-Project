@@ -1,5 +1,5 @@
-﻿using Gym.Application.Exceptions;
-using Microsoft.AspNetCore.Mvc;
+﻿
+using Gym.Domain.Exceptions;
 
 namespace Gym.API.Middleware;
 

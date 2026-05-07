@@ -15,6 +15,10 @@ public interface IGenericRepository<TEntity> where TEntity : class
     Task<IReadOnlyList<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct= default);
 
 
+    // check if any entity exists based on a predicate
+    Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate,CancellationToken ct = default);
+
+
     // Add a new entity
     Task AddAsync(TEntity entity , CancellationToken ct = default);
 
