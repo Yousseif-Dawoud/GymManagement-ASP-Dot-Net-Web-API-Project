@@ -13,7 +13,7 @@ public sealed class MembersController : ControllerBase
 
 
 
-    // This Endpoint Make Create A New Member And Return The Created MemberDetails DTO
+    // This Endpoint Make Create A New Member And Return The Created Member Details DTO.
     // --------------------------------------------------------------------------------
     [HttpPost("Create-Member")]
     [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status201Created)]
@@ -25,7 +25,7 @@ public sealed class MembersController : ControllerBase
 
 
 
-    // This Endpoint Make Get All Members And Return A List Of MemberListItem DTOs
+    // This Endpoint Make Get All Members And Return A List Of MemberListItem DTOs.
     // -----------------------------------------------------------------------------
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<MemberListItem>), StatusCodes.Status200OK)]
@@ -37,7 +37,7 @@ public sealed class MembersController : ControllerBase
 
 
 
-    // This Endpoint Make Get A Member By Id And Return A MemberDetails DTO
+    // This Endpoint Make Get A Member By Id And Return A MemberResponse DTO.
     // ---------------------------------------------------------------------
     [HttpGet("{id:int:min(1)}")]
     [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
@@ -49,5 +49,16 @@ public sealed class MembersController : ControllerBase
 
 
 
-    
+    // This Endpoint Make Update A Member By Id Using The Request DTO and Return Updated Details.
+    // -------------------------------------------------------------------------------------------
+    [HttpPut("{id:int:min(1)}")]
+    [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<MemberResponse>> UpdateMember(int id, [FromBody] UpdateMemberRequest request, CancellationToken ct = default)
+    {
+        var member = await _memberService.UpdateAsync(id, request, ct);
+        return Ok(member);
+    }
+
+
+
 }

@@ -18,6 +18,11 @@ public interface IMemberService
 
 
 
+    // 4.Update Member : This method allows you to update the details of an existing member .
+    Task<MemberResponse> UpdateAsync(int id, UpdateMemberRequest request, CancellationToken ct = default);
+
+
+
     Task<MemberResponse> GetProfileAsync(int id, CancellationToken ct = default);
 
 }

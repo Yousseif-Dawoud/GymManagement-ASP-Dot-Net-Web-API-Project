@@ -29,7 +29,25 @@ public class Member : BaseEntity
         => (FullName, Phone, Email, MembershipStartDate, MembershipEndDate, MembershipPlanId, Status)
         = (fullName, phone, email, startDate, endDate, membershipPlanId, MembershipStatus.Active);
 
-        public void ExpireMembership()
+    public void Update(
+    string fullName,
+    string phone,
+    string email,
+    DateOnly membershipStartDate,
+    DateOnly membershipEndDate,
+    int membershipPlanId)
+    {
+        FullName = fullName;
+        Phone = phone;
+        Email = email;
+        MembershipStartDate = membershipStartDate;
+        MembershipEndDate = membershipEndDate;
+        MembershipPlanId = membershipPlanId;
+
+        SetUpdated();
+    }
+
+    public void ExpireMembership()
         {
             Status = MembershipStatus.Expired;
             SetUpdated();
