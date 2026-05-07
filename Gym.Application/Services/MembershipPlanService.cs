@@ -11,43 +11,43 @@ public sealed class MembershipPlanService : IMembershipPlanService
 
     // Implement the Create Membership Plan Async method to create a new membership.
     // -----------------------------------------------------------------------------------------------
-    public async Task<MembershipPlanResponse> CreateMembershipPlanAsync(CreateMembershipPlanRequest request, CancellationToken ct = default)
-    {
-        // 1. create a new MembershipPlan entity using the data from the request.
-        var plan = new MembershipPlan(
-            name: request.Name,
-            price: request.Price,
-            maxSessionsPerMonth: request.MaxSessionsPerMonth
-        );
+    //public async Task<MembershipPlanResponse> CreateMembershipPlanAsync(CreateMembershipPlanRequest request, CancellationToken ct = default)
+    //{
+    //    // 1. create a new MembershipPlan entity using the data from the request.
+    //    var plan = new MembershipPlan(
+    //        name: request.Name,
+    //        price: request.Price,
+    //        maxSessionsPerMonth: request.MaxSessionsPerMonth
+    //    );
 
 
-        // 2. add the new plan to the repository and save changes to the database.
-        await _uow.MembershipPlans.AddAsync(plan, ct);
-        await _uow.SaveChangesAsync(ct);
+    //    // 2. add the new plan to the repository and save changes to the database.
+    //    await _uow.MembershipPlans.AddAsync(plan, ct);
+    //    await _uow.SaveChangesAsync(ct);
 
 
-        // 3. return a MembershipPlanResponse with the details of the created plan.
-        return MapToResponse(plan);
-    }
+    //    // 3. return a MembershipPlanResponse with the details of the created plan.
+    //    return MapToResponse(plan);
+    //}
 
 
 
     // Implement the GetMembershipPlanByIdAsync method to retrieve a membership plan by its ID.
     // -----------------------------------------------------------------------------------------------
-    public async Task<MembershipPlanResponse> GetMembershipPlanByIdAsync(int id, CancellationToken ct = default)
-    {
-        // 1. retrieve the membership plan from the repository using the provided ID.
-        var plan = await _uow.MembershipPlans.GetByIdAsync(id, ct);
+    //public async Task<MembershipPlanResponse> GetMembershipPlanByIdAsync(int id, CancellationToken ct = default)
+    //{
+    //    // 1. retrieve the membership plan from the repository using the provided ID.
+    //    var plan = await _uow.MembershipPlans.GetByIdAsync(id, ct);
 
 
-        // 2. if the plan is not found, throw a NotFoundException.
-        if (plan is null)
-            throw new NotFoundException($"Membership plan with ID {id} not found.");
+    //    // 2. if the plan is not found, throw a NotFoundException.
+    //    if (plan is null)
+    //        throw new NotFoundException($"Membership plan with ID {id} not found.");
 
 
-        // 3. if the plan is found, return a MembershipPlanResponse with the details of the plan.
-        return MapToResponse(plan);
-    }
+    //    // 3. if the plan is found, return a MembershipPlanResponse with the details of the plan.
+    //    return MapToResponse(plan);
+    //}
 
 
 

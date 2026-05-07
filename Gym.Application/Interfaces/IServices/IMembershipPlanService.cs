@@ -10,12 +10,12 @@ public interface IMembershipPlanService
 
 
     // 1. CreateMembershipPlan
-    Task<MembershipPlanResponse> CreateMembershipPlanAsync(CreateMembershipPlanRequest request, CancellationToken ct = default);
+    //Task<MembershipPlanResponse> CreateMembershipPlanAsync(CreateMembershipPlanRequest request, CancellationToken ct = default);
 
 
 
     // 2. GetMembershipPlanById
-    Task<MembershipPlanResponse> GetMembershipPlanByIdAsync(int id, CancellationToken ct = default);
+    //Task<MembershipPlanResponse> GetMembershipPlanByIdAsync(int id, CancellationToken ct = default);
 
 
 
