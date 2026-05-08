@@ -77,13 +77,13 @@ public sealed class MembershipPlanService : IMembershipPlanService
 
 
     // Helper method to map a MembershipPlan entity to a MembershipPlanResponse DTO.
-    private static MembershipPlanResponse MapToResponse(MembershipPlan plan)
-        => new(
-            Id: plan.Id,
-            Name: plan.Name,
-            Price: plan.Price,
-            MaxSessionsPerMonth: plan.MaxSessionsPerMonth,
-            CreatedAt: plan.CreatedAt,
-            UpdatedAt: plan.UpdatedAt
-        );
+    //private static MembershipPlanResponse MapToResponse(MembershipPlan plan)
+    //    => new(
+    //        Id: plan.Id,
+    //        Name: plan.Name,
+    //        Price: plan.Price,
+    //        MaxSessionsPerMonth: plan.MaxSessionsPerMonth,
+    //        CreatedAt: plan.CreatedAt,
+    //        UpdatedAt: plan.UpdatedAt
+    //    );
 }
