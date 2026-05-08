@@ -1,8 +1,10 @@
-﻿
-namespace Gym.Application.DTOs.MembershipPlans;
+﻿namespace Gym.Application.DTOs.MembershipPlans;
 
 public sealed record UpdateMembershipPlanRequest(
     string Name,
+    MembershipPlanType Type,
     decimal Price,
-    int MaxSessionsPerMonth
+    string Description,
+    int MaxSessionsPerMonth,
+    bool IncludesPersonalTrainer
 );

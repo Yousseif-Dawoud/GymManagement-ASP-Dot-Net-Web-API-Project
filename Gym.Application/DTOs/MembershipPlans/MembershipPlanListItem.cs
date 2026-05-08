@@ -4,7 +4,8 @@ namespace Gym.Application.DTOs.MembershipPlans;
 public sealed record MembershipPlanListItem(
     int Id,
     string Name,
+    string Type,
     decimal Price,
-    int MaxSessionsPerMonth
+    bool IsActive
 );
 

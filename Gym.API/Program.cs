@@ -1,11 +1,18 @@
 
-using Gym.API.Middleware;
-using Swashbuckle.AspNetCore.Filters;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // ✅ Add Controllers (مهم جداً)
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters
+            .Add(new JsonStringEnumConverter());
+    });
+
+// FluentValidation
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateMemberRequestValidator>();
 
 // ✅ Global Exception Middleware
 builder.Services.AddTransient<GlobalExceptionMiddleware>();

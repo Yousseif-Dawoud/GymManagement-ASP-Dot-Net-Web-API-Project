@@ -3,6 +3,9 @@ namespace Gym.Application.DTOs.MembershipPlans;
 
 public sealed record CreateMembershipPlanRequest(
     string Name,
+    MembershipPlanType Type,
     decimal Price,
-    int MaxSessionsPerMonth
+    string Description,
+    int MaxSessionsPerMonth,
+    bool IncludesPersonalTrainer
 );

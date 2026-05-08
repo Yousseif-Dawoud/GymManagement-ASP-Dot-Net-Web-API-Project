@@ -10,3 +10,9 @@ global using Gym.Application.DTOs.Members;
 global using Swashbuckle.AspNetCore.Filters;
 global using Gym.API.Swagger.Examples.Members;
 global using Gym.Application.Exceptions;
+global using FluentValidation;
+global using FluentValidation.AspNetCore;
+global using Gym.API.Middleware;
+global using Gym.Application.Validators.Members;
+global using System.Text.Json.Serialization;
+
