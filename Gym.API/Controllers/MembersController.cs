@@ -1,5 +1,7 @@
 ﻿
 
+using Gym.Application.Common.Responses;
+
 namespace Gym.API.Controllers;
 
 [ApiController]
@@ -40,11 +42,11 @@ public sealed class MembersController : ControllerBase
     // This Endpoint Make Get A Member By Id And Return A MemberResponse DTO.
     // -----------------------------------
     [HttpGet("{id:int:min(1)}")]
-    [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
-    public async Task<ActionResult<MemberResponse>> GetById(int id, CancellationToken ct = default)
+    [ProducesResponseType(typeof(ApiResponse<MemberResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ApiResponse<MemberResponse>>> GetById(int id, CancellationToken ct = default)
     {
         var member = await _memberService.GetByIdAsync(id, ct);
-        return Ok(member);
+       return Ok(ApiResponse<MemberResponse>.SuccessResponse(member,"Get Member By Id Successfully."));
     }
 
 
