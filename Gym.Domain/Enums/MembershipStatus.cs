@@ -4,5 +4,6 @@ namespace Gym.Domain.Enums;
 public enum MembershipStatus
 {
     Active = 1,
-    Expired
+    Expired = 2,
+    Frozen = 3
 }

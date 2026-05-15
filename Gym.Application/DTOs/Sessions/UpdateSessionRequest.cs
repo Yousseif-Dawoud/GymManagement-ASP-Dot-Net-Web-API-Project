@@ -2,9 +2,11 @@
 namespace Gym.Application.DTOs.Sessions;
 
 public sealed record UpdateSessionRequest(
-    string Title,
-    DateOnly Date,
-    TimeOnly StartTime,
+    string Name,
+    string? Description,
+    SessionType Type,
+    DateTime StartTime,
+    DateTime EndTime,
     int Capacity,
     int TrainerId
 );

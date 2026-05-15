@@ -1,100 +1,176 @@
-﻿
-namespace Gym.Domain.Entities;
+﻿namespace Gym.Domain.Entities;
 
 public class MembershipPlan : BaseEntity
 {
     // Properties
-    public string Name { get; private set; } = null!;
-
+    // =========================
     public MembershipPlanType Type { get; private set; }
-
     public decimal Price { get; private set; }
-
     public string Description { get; private set; } = null!;
-
+    public int DurationInDays { get; private set; }
     public int MaxSessionsPerMonth { get; private set; }
-
     public bool IncludesPersonalTrainer { get; private set; }
-
     public bool IsActive { get; private set; }
 
+
     // Navigation Properties
+    // =========================
+
     private readonly List<Member> _members = new();
     public IReadOnlyCollection<Member> Members => _members;
 
-    // Private Constructor For EF Core
+    private readonly List<Package> _packages = new();
+    public IReadOnlyCollection<Package> Packages => _packages;
+
+
+    // EF Core Constructor
+    // =========================
     private MembershipPlan() { }
 
-    // Public Constructor To Create A New Membership Plan
+
+    // Main Constructor
+    // =========================
     public MembershipPlan(
-        string name,
         MembershipPlanType type,
         decimal price,
         string description,
+        int durationInDays,
         int maxSessionsPerMonth,
-        bool includesPersonalTrainer)
+        bool includesPersonalTrainer = false)
     {
-        Validate(name, price, maxSessionsPerMonth);
+        Validate(price,description, durationInDays,maxSessionsPerMonth);
 
-        Name = name;
         Type = type;
         Price = price;
-        Description = description;
+        Description = description.Trim();
+        DurationInDays = durationInDays;
         MaxSessionsPerMonth = maxSessionsPerMonth;
-        IncludesPersonalTrainer = includesPersonalTrainer;
+
+        ApplyPersonalTrainerRule(type,includesPersonalTrainer);
 
         IsActive = true;
     }
 
 
-    // Business Logic Methods
+    // Update
+    // =========================
 
     public void Update(
-        string name,
         MembershipPlanType type,
         decimal price,
         string description,
+        int durationInDays,
         int maxSessionsPerMonth,
         bool includesPersonalTrainer)
     {
-        Validate(name, price, maxSessionsPerMonth);
+        Validate(price, description, durationInDays, maxSessionsPerMonth);
 
-        Name = name;
         Type = type;
         Price = price;
-        Description = description;
+        Description = description.Trim();
+        DurationInDays = durationInDays;
         MaxSessionsPerMonth = maxSessionsPerMonth;
-        IncludesPersonalTrainer = includesPersonalTrainer;
+
+        ApplyPersonalTrainerRule(type, includesPersonalTrainer);
 
         SetUpdated();
     }
 
-    public void Activate() 
+
+    // Business Behaviors
+    // =========================
+
+    public void Activate()
     {
+        if (IsActive)
+            return;
+
         IsActive = true;
+
         SetUpdated();
     }
 
-    public void Deactivate()  
+    public void Deactivate()
     {
+        if (!IsActive)
+            return;
+
         IsActive = false;
+
         SetUpdated();
     }
+
+    public void ChangePrice(decimal newPrice)
+    {
+        if (newPrice <= 0)
+            throw new BusinessRuleException("Price must be greater than zero.");
+
+        Price = newPrice;
+
+        SetUpdated();
+    }
+
+    public void ChangeDuration(int durationInDays)
+    {
+        if (durationInDays <= 0)
+            throw new BusinessRuleException("Duration must be greater than zero.");
+
+        DurationInDays = durationInDays;
+
+        SetUpdated();
+    }
+
+    public void ChangeSessionLimit(int maxSessionsPerMonth)
+    {
+        if (maxSessionsPerMonth <= 0)
+            throw new BusinessRuleException("Max sessions per month must be greater than zero.");
+
+        MaxSessionsPerMonth = maxSessionsPerMonth;
+
+        SetUpdated();
+    }
+
+    public void ChangeDescription(string description)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+            throw new BusinessRuleException("Description is required.");
+
+        Description = description.Trim();
+
+        SetUpdated();
+    }
+
+
+    // Business Rules
+    // =========================
+
+    private void ApplyPersonalTrainerRule(MembershipPlanType type,bool includesPersonalTrainer)
+    {
+        // VIP plans must always include PT
+
+        IncludesPersonalTrainer = type == MembershipPlanType.VIP ? true : includesPersonalTrainer;
+    }
+
+
+    // Validation
+    // =========================
 
     private static void Validate(
-       string name,
-       decimal price,
-       int maxSessionsPerMonth)
+        decimal price,
+        string description,
+        int durationInDays,
+        int maxSessionsPerMonth)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new BusinessRuleException("Plan name is required.");
-
         if (price <= 0)
-            throw new BusinessRuleException(
-                "Price must be greater than zero.");
+            throw new BusinessRuleException("Price must be greater than zero.");
+
+        if (string.IsNullOrWhiteSpace(description))
+            throw new BusinessRuleException("Description is required.");
+
+        if (durationInDays <= 0)
+            throw new BusinessRuleException("Duration must be greater than zero.");
 
         if (maxSessionsPerMonth <= 0)
-            throw new BusinessRuleException(
-                "Max sessions per month must be greater than zero.");
+            throw new BusinessRuleException("Max sessions per month must be greater than zero.");
     }
 }

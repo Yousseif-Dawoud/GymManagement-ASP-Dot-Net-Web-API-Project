@@ -3,12 +3,17 @@ namespace Gym.Application.DTOs.Bookings;
 
 public sealed record BookingResponse(
     int Id,
+
     int MemberId,
     string MemberName,
+
     int SessionId,
-    string SessionTitle,
+    string SessionName,
+
     DateTime BookingDate,
-    DateTime CreatedAt,
-    DateTime? UpdatedAt
+
+    BookingStatus Status,
+
+    string? Notes
 );
 

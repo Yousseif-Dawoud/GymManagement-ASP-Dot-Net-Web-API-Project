@@ -3,7 +3,7 @@ namespace Gym.Domain.Enums;
 
 public enum SessionStatus
 {
-    Open = 1,
-    Full ,
-    Cancelled 
+    Scheduled = 1,
+    Completed = 2,
+    Cancelled = 3
 }

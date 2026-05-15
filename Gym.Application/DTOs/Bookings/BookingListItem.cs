@@ -2,10 +2,10 @@
 namespace Gym.Application.DTOs.Bookings;
 
 public sealed record BookingListItem(
-    int Id,
-    int MemberId,
+     int Id,
+
     string MemberName,
-    int SessionId,
-    string SessionTitle,
-    DateTime BookingDate
+    string SessionName,
+
+    BookingStatus Status
 );

@@ -2,10 +2,28 @@
 
 public sealed record MemberProfileResponse(
 
-    int Id,
+   int Id,
+
     string FullName,
     string Phone,
     string Email,
-    DateOnly MembershipStartDate
+
+    Gender Gender,
+    DateOnly DateOfBirth,
+
+    string? EmergencyContact,
+
+    MembershipStatus Status,
+
+    DateOnly MembershipStartDate,
+    DateOnly MembershipEndDate,
+
+    int MembershipPlanId,
+    MembershipPlanType MembershipPlanType,
+
+    int? PackageId,
+    string? PackageName,
+
+    bool HasPersonalTrainer
 
 );

@@ -1,7 +1,4 @@
-﻿
-namespace Gym.Infrastructure.Data;
-
-public class GymDbContext : DbContext
+﻿public class GymDbContext : DbContext
 {
     public GymDbContext(DbContextOptions<GymDbContext> options) : base(options) { }
 
@@ -11,11 +8,12 @@ public class GymDbContext : DbContext
     public DbSet<Booking> Bookings => Set<Booking>();
     public DbSet<MembershipPlan> MembershipPlans => Set<MembershipPlan>();
 
+    // ✅ NEW
+    public DbSet<Package> Packages => Set<Package>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(GymDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
     }
 }
-
-// The New Syntex : How To Write The DbSet

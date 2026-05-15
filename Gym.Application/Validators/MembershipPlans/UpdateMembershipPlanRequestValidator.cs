@@ -5,24 +5,49 @@ public sealed class UpdateMembershipPlanRequestValidator
 {
     public UpdateMembershipPlanRequestValidator()
     {
-        RuleFor(x => x.Name)
-            .NotEmpty()
-            .MaximumLength(100);
+        // Type
+        // =========================
+        RuleFor(x => x.Type)
+            .IsInEnum()
+            .WithMessage("Invalid membership plan type.");
 
+
+        // Price
+        // =========================
         RuleFor(x => x.Price)
-            .GreaterThan(0);
+            .GreaterThan(0)
+            .WithMessage("Price must be greater than zero.");
+
+
+        // Description
+        // =========================
 
         RuleFor(x => x.Description)
             .NotEmpty()
-            .MaximumLength(500);
+            .WithMessage("Description is required.")
+            .MaximumLength(500)
+            .WithMessage("Description cannot exceed 500 characters.");
 
+
+        // Duration
+        // =========================
+        RuleFor(x => x.DurationInDays)
+            .GreaterThan(0)
+            .WithMessage("Duration must be greater than zero.");
+
+
+        // Max Sessions
+        // =========================
         RuleFor(x => x.MaxSessionsPerMonth)
-            .GreaterThan(0);
+            .GreaterThan(0)
+            .WithMessage("Max sessions per month must be greater than zero.");
 
-        RuleFor(x => x.Type)
-            .IsInEnum();
 
+        // VIP Rule
+        // =========================
         RuleFor(x => x.IncludesPersonalTrainer)
-            .NotNull();
+            .Equal(true)
+            .When(x => x.Type == MembershipPlanType.VIP)
+            .WithMessage("VIP plans must include a personal trainer.");
     }
 }

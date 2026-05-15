@@ -1,8 +1,4 @@
-﻿using Gym.Application.Interfaces.IRepositories;
-using Gym.Domain.Common;
-using Member = Gym.Domain.Entities.Member;
-
-namespace Gym.Application.Interfaces.IUnitOfWork;
+﻿namespace Gym.Application.Interfaces.IUnitOfWork;
 
 public interface IUnitOfWork : IDisposable
 {
@@ -11,6 +7,7 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<Session> Sessions { get; }
     IGenericRepository<Booking> Bookings { get; }
     IGenericRepository<MembershipPlan> MembershipPlans { get; }
+    IGenericRepository<Package> Packages { get; }
 
     // Generic repository for any entity type 
     IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity;

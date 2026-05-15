@@ -3,5 +3,12 @@ namespace Gym.Application.DTOs.Trainers;
 
 public sealed record CreateTrainerRequest(
     string FullName,
-    string Specialty
+    string Phone,
+    string Email,
+    Gender Gender,
+    DateOnly DateOfBirth,
+    string Specialization,
+    int ExperienceYears,
+    DateOnly HireDate,
+    string? Bio
 );

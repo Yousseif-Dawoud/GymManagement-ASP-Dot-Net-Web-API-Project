@@ -10,15 +10,15 @@ public interface ITrainerService
 
 
     // 1. CreateTrainerAsync
-    Task<TrainerResponse> CreateTrainerAsync(CreateTrainerRequest request , CancellationToken ct = default);
+    //Task<TrainerResponse> CreateTrainerAsync(CreateTrainerRequest request , CancellationToken ct = default);
 
 
 
     // 2. GetTrainerByIdAsync
-    Task<TrainerResponse> GetTrainerByIdAsync(int id, CancellationToken ct = default);
+    //Task<TrainerResponse> GetTrainerByIdAsync(int id, CancellationToken ct = default);
 
 
 
     // 3. GetAllTrainersAsync
-    Task<IReadOnlyList<TrainerListItem>> GetAllTrainersAsync(CancellationToken ct = default);
+    //Task<IReadOnlyList<TrainerListItem>> GetAllTrainersAsync(CancellationToken ct = default);
 }

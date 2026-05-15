@@ -2,9 +2,16 @@
 namespace Gym.Application.DTOs.Members;
 
 public sealed record MemberListItem(
-    int Id,
+     int Id,
     string FullName,
     string Phone,
-    string Status
+
+    MembershipStatus Status,
+
+    MembershipPlanType MembershipPlanType,
+
+    string? PackageName,
+
+    DateOnly MembershipEndDate
 );
 

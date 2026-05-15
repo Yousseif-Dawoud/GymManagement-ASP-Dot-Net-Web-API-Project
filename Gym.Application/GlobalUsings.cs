@@ -12,3 +12,8 @@ global using Gym.Application.DTOs.Sessions;
 global using Gym.Application.DTOs.Trainers;
 global using Gym.Domain.Enums;
 global using FluentValidation;
+global using Gym.Application.DTOs.Packages;
+global using Gym.Application.Interfaces.IRepositories;
+global using Gym.Domain.Common;
+global using Member = Gym.Domain.Entities.Member;
+global using Gym.Domain.Exceptions;

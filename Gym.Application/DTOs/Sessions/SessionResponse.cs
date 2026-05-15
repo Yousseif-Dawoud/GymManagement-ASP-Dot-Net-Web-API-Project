@@ -2,14 +2,24 @@
 namespace Gym.Application.DTOs.Sessions;
 
 public sealed record SessionResponse(
-    int Id,
-    string Title,
-    DateOnly Date,
-    TimeOnly StartTime,
+     int Id,
+
+    string Name,
+    string? Description,
+
+    SessionType Type,
+    SessionStatus Status,
+
+    DateTime StartTime,
+    DateTime EndTime,
+
     int Capacity,
+
     int TrainerId,
     string TrainerName,
-    string Status,
+
+    int BookingsCount,
+
     DateTime CreatedAt,
     DateTime? UpdatedAt
 );

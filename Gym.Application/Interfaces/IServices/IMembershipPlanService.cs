@@ -1,7 +1,4 @@
-﻿
-using Gym.Application.DTOs.MembershipPlans;
-
-namespace Gym.Application.Interfaces.IServices;
+﻿namespace Gym.Application.Interfaces.IServices;
 
 public interface IMembershipPlanService
 {

@@ -6,11 +6,16 @@ public sealed record MemberResponse(
     string FullName,
     string Phone,
     string Email,
+    Gender Gender,
+    DateOnly DateOfBirth,
+    string? EmergencyContact,
+    MembershipStatus Status,
     DateOnly MembershipStartDate,
     DateOnly MembershipEndDate,
+
     int MembershipPlanId,
     string MembershipPlanName,
-    string Status,
-    DateTime CreatedAt,
-    DateTime? UpdatedAt
+
+    int? PackageId,
+    string? PackageName
 );
