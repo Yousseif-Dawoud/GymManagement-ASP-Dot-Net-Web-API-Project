@@ -1,57 +1,66 @@
 ﻿namespace Gym.Infrastructure.Repositories;
 
-public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class 
+public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
 {
-    // Inject the DbContext To Do Database Operations and Set the DbSet for the specific entity type
-    protected readonly GymDbContext _context;
-    protected readonly DbSet<TEntity> _dbSet;
+    // Injecting the DbContext and initializing the DbSet for the entity type
+    private readonly GymDbContext _context;
+    private readonly DbSet<TEntity> _dbSet;
     public GenericRepository(GymDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _dbSet = _context.Set<TEntity>();
     }
 
+    // READ OPERATIONS
+    // =========================
+    public async Task<TEntity?> GetByIdAsync(int id,CancellationToken ct = default)
+            => await _dbSet.FindAsync(new object[] { id }, ct);
+    
 
-    // Get all entities from the database 
-    public  async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken ct = default)
-    => await _dbSet.AsNoTracking().ToListAsync(ct);
-
-
-
-    // Get an entity by its primary key (id) using FindAsync
-    public Task<TEntity?> GetByIdAsync(int id ,CancellationToken ct = default)
-    => _dbSet.FindAsync(id, ct).AsTask();
-
-
-
-    // Find entities that match a given predicate (filter)
-    public  async Task<IReadOnlyList<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
-    => await _dbSet.Where(predicate).AsNoTracking().ToListAsync(ct);
-
-
-
-    // Check if any entity exists that matches a given predicate
-    public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate,CancellationToken ct = default)
-    => await _dbSet.AnyAsync(predicate, ct);
-
-
-    // Add a new entity to the database using AddAsync
-    public Task AddAsync(TEntity entity , CancellationToken ct = default)
-    => _dbSet.AddAsync(entity, ct).AsTask();
-
-
-
-    // Update the entity by attaching it to the context and setting its state to Modified
-    public void Update(TEntity entity)
+    public async Task<IReadOnlyList<TEntity>> FindAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken ct = default)
     {
-        _dbSet.Attach(entity);
-        _context.Entry(entity).State = EntityState.Modified;
+        return await _dbSet
+            .Where(predicate)
+            .AsNoTracking()
+            .ToListAsync(ct);
     }
 
+    public async Task<bool> ExistsAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken ct = default)
+    {
+        return await _dbSet.AnyAsync(predicate, ct);
+    }
 
+    // ❌ Removed GetAllAsync (to avoid unsafe full table loading)
 
-    // Remove the entity from the database using Remove
-    public void Remove(TEntity entity) => _dbSet.Remove(entity);
+    // WRITE OPERATIONS
+    // =========================
+    public async Task AddAsync(
+        TEntity entity,
+        CancellationToken ct = default)
+    {
+        if (entity is null)
+            throw new ArgumentNullException(nameof(entity));
 
+        await _dbSet.AddAsync(entity, ct);
+    }
 
+    public void Update(TEntity entity)
+    {
+        if (entity is null)
+            throw new ArgumentNullException(nameof(entity));
+
+        _dbSet.Update(entity);
+    }
+
+    public void Remove(TEntity entity)
+    {
+        if (entity is null)
+            throw new ArgumentNullException(nameof(entity));
+
+        _dbSet.Remove(entity);
+    }
 }

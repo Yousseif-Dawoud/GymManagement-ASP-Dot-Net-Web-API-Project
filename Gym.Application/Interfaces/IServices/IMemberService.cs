@@ -1,28 +1,66 @@
 ﻿
+using Gym.Application.Common;
+
 namespace Gym.Application.Interfaces.IServices;
+
+// This Interface Make Definition For All Use Cases Related To Member Entity .
+
+// Read Operations For Member Entity :     
+//  - Get All Members
+//  - Get Member By Id
+//  - Search Members
+
+// Write Operations For Member Entity :
+//  - Create Member
+//  - Update Member
+//  - Delete Member
+
+// MemberShip Use Case Operations For Member  :
+//  - Renew Membership
+//  - Freeze Membership
+//  - Unfreeze Membership
+//  - Expire Membership
+
+// Package Operations For Member :
+//  - Assign Package
+//  - Remove Package
 
 public interface IMemberService
 {
-    // 1.Create Member : This method allows you to create a new member in the gym. 
-    //Task<MemberResponse> CreateAsync(CreateMemberRequest request, CancellationToken ct = default);
+    // Read Operations And Queries For Member Entity :
+    // -----------------------------------
+    Task<PagedResult<MemberListItem>> SearchAsync(MemberQueryRequest request,CancellationToken ct = default); // GetAll 
+
+    Task<MemberResponse?> GetByIdAsync(int memberId,CancellationToken ct = default);
+
+    Task<MemberProfileResponse> GetProfileAsync(int memberId,CancellationToken ct = default);
 
 
 
-    // 2.Get all Members : This method retrieves a list of all members in the gym.
-    //Task<IReadOnlyList<MemberListItem>> GetAllMembers(CancellationToken ct = default);
+    // Write Operations And Commands For Member Entity :
+    // -----------------------------------
+    Task<MemberResponse> CreateAsync(CreateMemberRequest request,CancellationToken ct = default);
+
+    Task<MemberResponse> UpdateAsync(int memberId,UpdateMemberRequest request,CancellationToken ct = default);
+
+    Task DeleteAsync(int memberId,CancellationToken ct = default);
 
 
 
-    // 3.Get Member By Id : This method retrieves the details of a specific member based on their unique identifier (Id).
-    //Task<MemberResponse> GetByIdAsync(int id, CancellationToken ct = default);
+    // Membership Use Case Operations For Member  :
+    Task RenewMembershipAsync(int memberId,RenewMembershipRequest request,CancellationToken ct = default);
+
+    Task FreezeMembershipAsync( int memberId,CancellationToken ct = default);
+
+    Task UnfreezeMembershipAsync(int memberId,CancellationToken ct = default);
+
+    Task ExpireMembershipAsync(int memberId,CancellationToken ct = default);
 
 
 
-    // 4.Update Member : This method allows you to update the details of an existing member .
-    //Task<MemberResponse> UpdateAsync(int id, UpdateMemberRequest request, CancellationToken ct = default);
+    // Package Operations For Member :
+    Task AssignPackageAsync(int memberId,int packageId,CancellationToken ct = default);
 
-
-
-    //Task<MemberResponse> GetProfileAsync(int id, CancellationToken ct = default);
+    Task RemovePackageAsync(int memberId,CancellationToken ct = default);
 
 }

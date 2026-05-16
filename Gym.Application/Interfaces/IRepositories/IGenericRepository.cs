@@ -4,7 +4,7 @@ namespace Gym.Application.Interfaces.IRepositories;
 public interface IGenericRepository<TEntity> where TEntity : class
 {
     // Get all entities
-    Task <IReadOnlyList<TEntity>> GetAllAsync(CancellationToken ct = default);
+    //Task <IReadOnlyList<TEntity>> GetAllAsync(CancellationToken ct = default);
 
 
     // Get an entity by its ID
