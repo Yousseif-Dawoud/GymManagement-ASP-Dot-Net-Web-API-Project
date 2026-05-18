@@ -17,3 +17,4 @@ global using Gym.Application.Interfaces.IRepositories;
 global using Gym.Domain.Common;
 global using Member = Gym.Domain.Entities.Member;
 global using Gym.Domain.Exceptions;
+global using Gym.Application.Common;
