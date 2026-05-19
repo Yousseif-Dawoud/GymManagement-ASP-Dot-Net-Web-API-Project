@@ -31,7 +31,7 @@ public interface IMemberService
     // -----------------------------------
     Task<PagedResult<MemberListItem>> SearchAsync(MemberQueryRequest request,CancellationToken ct = default); // GetAll 
 
-    Task<MemberResponse?> GetByIdAsync(int memberId,CancellationToken ct = default);
+    Task<MemberResponse> GetByIdAsync(int memberId,CancellationToken ct = default);
 
     Task<MemberProfileResponse> GetProfileAsync(int memberId,CancellationToken ct = default);
 

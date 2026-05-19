@@ -63,7 +63,31 @@ public sealed class MemberService : IMemberService
         // 8. Map response
         return ToResponse(member,membershipPlan.Type.ToString(),package?.Name);
     }
-    
+
+
+
+    // Get Member By Id
+    // ----------------------------------
+    public async Task<MemberResponse> GetByIdAsync(int memberId,CancellationToken ct = default)
+    {
+        // 1. Get Member By Id Or Throw NotFoundException If Not Found.
+        var member = await GetMemberOrThrowAsync(memberId, ct);
+
+
+
+        // 2. Get MembershipPlan Or Throw NotFoundException If Not Found.
+        var membershipPlan = await GetMembershipPlanOrThrowAsync(member.MembershipPlanId, ct);
+
+
+
+        // 3. Get Package If Assigned (Optional) Focus I Say The Package Is Optional .
+        var package = await GetPackageOrThrowAsync(member.PackageId, ct);
+
+
+
+        // 4. If All Good Map The Member To MemberResponse And Return It.
+        return ToResponse(member, membershipPlan.Type.ToString(), package?.Name);
+    }
 
 
     public Task AssignPackageAsync(int memberId, int packageId, CancellationToken ct = default)
@@ -82,11 +106,6 @@ public sealed class MemberService : IMemberService
     }
 
     public Task FreezeMembershipAsync(int memberId, CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<MemberResponse?> GetByIdAsync(int memberId, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -163,6 +182,16 @@ public sealed class MemberService : IMemberService
         if (package is null)   throw new NotFoundException("Package was not found.");
         
         return package;
+    }
+
+    private async Task<Member> GetMemberOrThrowAsync(int memberId,CancellationToken ct)
+    {
+        var member = await _uow.Members.GetByIdAsync(memberId, ct);
+
+        if (member is null)
+            throw new NotFoundException("Member was not found.");
+
+        return member;
     }
 
     private static MemberResponse ToResponse(Member member,string membershipPlanName,string? packageName)
