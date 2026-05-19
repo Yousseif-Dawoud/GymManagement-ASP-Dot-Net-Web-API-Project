@@ -7,33 +7,34 @@ public sealed class MemberService : IMemberService
     public MemberService( IUnitOfWork uow) => _uow = uow;
 
 
+
     // Create A New Member
     // ----------------------------------
     public async Task<MemberResponse> CreateAsync(CreateMemberRequest request, CancellationToken ct = default)
     {
-        // 1. Check Email uniqueness 
-        await EnsureEmailIsUniqueAsync(request.Email, ct);
+        // 1. Normalize Email and Phone To Use Them In Uniqueness Checks And When The Checks Is Valide , I Can Save them.
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        var normalizedPhone = request.Phone.Trim();
 
 
 
-        // 2. Check Phone uniqueness
-        await EnsurePhoneIsUniqueAsync(request.Phone, ct);
+        // 2. Check Email uniqueness 
+        await EnsureEmailIsUniqueAsync(normalizedEmail, null, ct);
 
 
 
-        // 3. Check MembershipPlan exists if not throw NotFoundException
+        // 3. Check Phone uniqueness
+        await EnsurePhoneIsUniqueAsync(normalizedPhone, null, ct);
+
+
+
+        // 4. Check MembershipPlan exists if not throw NotFoundException
         var membershipPlan = await GetMembershipPlanOrThrowAsync(request.MembershipPlanId, ct);
 
 
 
-        // 4. Check Package exists (optional)  Focus I Say The Package is Optional .
+        // 5. Check Package exists (optional)  Focus I Say The Package is Optional .
         var package = await GetPackageOrThrowAsync(request.PackageId,ct);
-
-
-
-        // 5. Normalize Email and Phone Before Storing In The Database.
-        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
-        var normalizedPhone = request.Phone.Trim();
 
 
 
@@ -90,6 +91,71 @@ public sealed class MemberService : IMemberService
     }
 
 
+
+    // Update Member Information
+    // ----------------------------------
+    public async Task<MemberResponse> UpdateAsync(int memberId,UpdateMemberRequest request,CancellationToken ct = default)
+    {
+        // 1. Get Member By Id Or Throw NotFoundException If Not Found.
+        var member = await GetMemberOrThrowAsync(memberId, ct);
+
+
+
+        // 2. Normalize Email and Phone To Use Them In Uniqueness Checks And When The Checks Is Valide , I Can Save them.
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        var normalizedPhone = request.Phone.Trim();
+
+
+        // 3. Check Email uniqueness (exclude current member)
+        await EnsureEmailIsUniqueAsync(normalizedEmail, memberId, ct);
+
+
+
+        // 4. Check Phone uniqueness (exclude current member)
+        await EnsurePhoneIsUniqueAsync(normalizedPhone, memberId, ct);
+
+
+
+        // 5. Check MembershipPlan exists if not throw NotFoundException
+        var membershipPlan = await GetMembershipPlanOrThrowAsync(request.MembershipPlanId, ct);
+
+
+
+        // 6. Check Package exists (optional)  Focus I Say The Package is Optional .
+        var package = await GetPackageOrThrowAsync(request.PackageId,ct);
+
+
+
+        // 7. Update Member Entity
+        member.Update(
+                     request.FullName,
+                     normalizedPhone,
+                     normalizedEmail,
+                     request.Gender,
+                     request.DateOfBirth,
+                     request.EmergencyContact,
+                     request.MembershipStartDate,
+                     request.MembershipEndDate,
+                     request.MembershipPlanId,
+                     request.PackageId
+                     );
+
+
+
+        // 8. Save Changes
+        await _uow.SaveChangesAsync(ct);
+
+        // Why I Don't Need To Call An Update Method On The Repository ?  Focus I Say Because We Are Tracking The Entity We Fetched From The Database So Any Changes We Make To It Will Be Automatically Detected And Saved When We Call SaveChangesAsync. This Is One Of The Key Benefits Of Using An ORM Like Entity Framework - It Handles Change Tracking For Us, So We Don't Have To Manually Tell It When An Entity Has Been Updated. We Just Fetch The Entity, Modify Its Properties, And Then Call SaveChangesAsync To Persist Those Changes To The Database.
+
+
+
+        // 9. Map response
+        return ToResponse(member,membershipPlan.Type.ToString(),package?.Name);
+    }
+
+
+
+    
     public Task AssignPackageAsync(int memberId, int packageId, CancellationToken ct = default)
     {
         throw new NotImplementedException();
@@ -135,33 +201,26 @@ public sealed class MemberService : IMemberService
         throw new NotImplementedException();
     }
 
-    public Task<MemberResponse> UpdateAsync(int memberId, UpdateMemberRequest request, CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
-
 
 
     // Private Helper Methods For Business Rule Validations Can Be Added Here
 
-    private async Task EnsureEmailIsUniqueAsync(string email,CancellationToken ct)
+    private async Task EnsureEmailIsUniqueAsync(string email, int? excludedMemberId, CancellationToken ct)
     {
-        var normalizedEmail = email.Trim().ToLowerInvariant();
+        // "اتأكد مفيش حد تاني غيري عنده نفس القيمة"
+        var exists = await _uow.Members.ExistsAsync(m => m.Email == email &&
+                     (!excludedMemberId.HasValue || m.Id != excludedMemberId.Value),ct);
 
-        var exists = await _uow.Members.ExistsAsync(m => m.Email == normalizedEmail,ct);
-
-        if (exists)
-            throw new BusinessException("A member with this email already exists.");
+        if (exists)  throw new BusinessException("A member with this email already exists.");
     }
 
-    private async Task EnsurePhoneIsUniqueAsync(string phone, CancellationToken ct)
+    private async Task EnsurePhoneIsUniqueAsync(string phone,int? excludedMemberId,CancellationToken ct)
     {
-        var normalizedPhone = phone.Trim();
+        // "اتأكد مفيش حد تاني غيري عنده نفس القيمة"
+        var exists = await _uow.Members.ExistsAsync(m => m.Phone == phone &&
+                 (!excludedMemberId.HasValue || m.Id != excludedMemberId.Value),ct);
 
-        var exists = await _uow.Members.ExistsAsync(m => m.Phone == normalizedPhone, ct);
-
-        if (exists)
-            throw new BusinessException("A member with this phone number already exists.");
+        if (exists)   throw new BusinessException("A member with this phone number already exists.");
     }
 
     private async Task<MembershipPlan> GetMembershipPlanOrThrowAsync (int membershipPlanId, CancellationToken ct)
