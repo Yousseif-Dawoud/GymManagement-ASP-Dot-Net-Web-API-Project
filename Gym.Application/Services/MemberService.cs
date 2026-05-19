@@ -11,57 +11,37 @@ public sealed class MemberService : IMemberService
     // ----------------------------------
     public async Task<MemberResponse> CreateAsync(CreateMemberRequest request, CancellationToken ct = default)
     {
-        #region What We Need To Do in This Method
-
-        //---------------------------------- 
-        // 1. Check Email uniqueness
-        // 2. Check Phone uniqueness
-        // 3. Check MembershipPlan exists
-        // 4. Check Package exists (optional)
-        // 5. Create Member Entity
-        // 6. Add Member to Repository and Save Changes
-        // 7. Map response
-
-        #endregion
-
-
-
-        // 1. Check Email is uniqueness    
+        // 1. Check Email uniqueness 
         await EnsureEmailIsUniqueAsync(request.Email, ct);
 
 
 
-        // 2. Check Phone is uniqueness
+        // 2. Check Phone uniqueness
         await EnsurePhoneIsUniqueAsync(request.Phone, ct);
 
 
 
-        // 3. Check MembershipPlan exists
-        var membershipPlan = await _uow.MembershipPlans.GetByIdAsync(request.MembershipPlanId,ct);
-
-        if ( membershipPlan is null)
-            throw new NotFoundException("Membership plan was not found.");
+        // 3. Check MembershipPlan exists if not throw NotFoundException
+        var membershipPlan = await GetMembershipPlanOrThrowAsync(request.MembershipPlanId, ct);
 
 
 
         // 4. Check Package exists (optional)  Focus I Say The Package is Optional .
-        Package? package = null;
-
-        if (request.PackageId.HasValue)
-        {
-            package = await _uow.Packages.GetByIdAsync(request.PackageId.Value,ct);
-
-            if (package is null)
-                throw new NotFoundException("Package was not found.");
-        }
+        var package = await GetPackageOrThrowAsync(request.PackageId,ct);
 
 
 
-        // 5. Create Member Entity
+        // 5. Normalize Email and Phone Before Storing In The Database.
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        var normalizedPhone = request.Phone.Trim();
+
+
+
+        // 6. Create Member Entity
         var member = new Member(
                      request.FullName,
-                     request.Phone,
-                     request.Email,
+                     normalizedPhone,
+                     normalizedEmail,
                      request.Gender,
                      request.DateOfBirth,
                      request.EmergencyContact,
@@ -74,13 +54,13 @@ public sealed class MemberService : IMemberService
 
 
 
-        // 6. Add Member to Repository and Save Changes
+        // 7. Add Member to Repository and Save Changes
         await _uow.Members.AddAsync(member, ct);
         await _uow.SaveChangesAsync(ct);
 
 
 
-        // 7. Map response
+        // 8. Map response
         return ToResponse(member,membershipPlan.Type.ToString(),package?.Name);
     }
     
@@ -163,6 +143,26 @@ public sealed class MemberService : IMemberService
 
         if (exists)
             throw new BusinessException("A member with this phone number already exists.");
+    }
+
+    private async Task<MembershipPlan> GetMembershipPlanOrThrowAsync (int membershipPlanId, CancellationToken ct)
+    {
+        var membershipPlan = await _uow.MembershipPlans.GetByIdAsync(membershipPlanId, ct);
+
+        if (membershipPlan is null)  throw new NotFoundException("Membership plan was not found.");
+
+        return membershipPlan;
+    }
+
+    private async Task<Package?> GetPackageOrThrowAsync(int? packageId,CancellationToken ct)
+    {
+        if ( ! packageId.HasValue)  return null;
+
+        var package = await _uow.Packages.GetByIdAsync(packageId.Value,ct);
+
+        if (package is null)   throw new NotFoundException("Package was not found.");
+        
+        return package;
     }
 
     private static MemberResponse ToResponse(Member member,string membershipPlanName,string? packageName)
