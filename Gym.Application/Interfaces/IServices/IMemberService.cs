@@ -6,7 +6,7 @@ namespace Gym.Application.Interfaces.IServices;
 // This Interface Make Definition For All Use Cases Related To Member Entity .
 
 // Read Operations For Member Entity :     
-//  - Get All Members
+//  - Get All Members => Specification Repository .
 //  - Get Member By Id
 //  - Search Members
 
