@@ -4,7 +4,8 @@ public sealed class MemberService : IMemberService
 {
     // Inject The UnitOfWork To Access The Repositories And Perform Database Operations
     private readonly IUnitOfWork _uow;
-    public MemberService( IUnitOfWork uow) => _uow = uow;
+    public MemberService(IUnitOfWork uow) { _uow = uow; }
+        
 
 
 
@@ -155,7 +156,14 @@ public sealed class MemberService : IMemberService
 
 
 
-    
+    // Search Members With Pagination And Filtering => I Make it A Specific Repository Method.
+    // ----------------------------------
+    //public async task<pagedresult<memberlistitem>> searchasync(memberqueryrequest request, cancellationtoken ct = default)
+    //{
+    //}
+
+
+
     public Task AssignPackageAsync(int memberId, int packageId, CancellationToken ct = default)
     {
         throw new NotImplementedException();
@@ -187,11 +195,6 @@ public sealed class MemberService : IMemberService
     }
 
     public Task RenewMembershipAsync(int memberId, RenewMembershipRequest request, CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<PagedResult<MemberListItem>> SearchAsync(MemberQueryRequest request, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

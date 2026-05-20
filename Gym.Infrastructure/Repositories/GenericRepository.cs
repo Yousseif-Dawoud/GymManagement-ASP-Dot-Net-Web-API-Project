@@ -3,7 +3,7 @@
 public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
 {
     // Injecting the DbContext and initializing the DbSet for the entity type
-    private readonly GymDbContext _context;
+    protected readonly GymDbContext _context;
     private readonly DbSet<TEntity> _dbSet;
     public GenericRepository(GymDbContext context)
     {

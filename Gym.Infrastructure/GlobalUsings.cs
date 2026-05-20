@@ -7,3 +7,5 @@ global using Gym.Infrastructure.Data;
 global using Gym.Infrastructure.Repositories;
 global using Gym.Application.Interfaces.IUnitOfWork;
 global using System.Collections.Concurrent;
+global using Gym.Application.Common;
+global using Gym.Application.DTOs.Members;
