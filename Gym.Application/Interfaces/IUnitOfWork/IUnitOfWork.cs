@@ -2,7 +2,9 @@
 
 public interface IUnitOfWork : IDisposable
 {
-    IGenericRepository<Member> Members { get; }
+    // Specific repository for Member entity with custom queries 
+    IMemberRepository Members { get; }  // { Generic repository + Member Repository }
+
     IGenericRepository<Trainer> Trainers { get; }
     IGenericRepository<Session> Sessions { get; }
     IGenericRepository<Booking> Bookings { get; }

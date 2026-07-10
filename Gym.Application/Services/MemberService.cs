@@ -5,12 +5,15 @@ public sealed class MemberService : IMemberService
     // Inject The UnitOfWork To Access The Repositories And Perform Database Operations
     private readonly IUnitOfWork _uow;
     public MemberService(IUnitOfWork uow) { _uow = uow; }
-        
 
+
+
+    // Write Operations  { CreateAsync , UpdateAsync , DeleteAsync }  
+    // ===============================
 
 
     // Create A New Member
-    // ----------------------------------
+    // -------------------
     public async Task<MemberResponse> CreateAsync(CreateMemberRequest request, CancellationToken ct = default)
     {
         // 1. Normalize Email and Phone To Use Them In Uniqueness Checks And When The Checks Is Valide , I Can Save them.
@@ -67,35 +70,9 @@ public sealed class MemberService : IMemberService
     }
 
 
-
-    // Get Member By Id
-    // ----------------------------------
-    public async Task<MemberResponse> GetByIdAsync(int memberId,CancellationToken ct = default)
-    {
-        // 1. Get Member By Id Or Throw NotFoundException If Not Found.
-        var member = await GetMemberOrThrowAsync(memberId, ct);
-
-
-
-        // 2. Get MembershipPlan Or Throw NotFoundException If Not Found.
-        var membershipPlan = await GetMembershipPlanOrThrowAsync(member.MembershipPlanId, ct);
-
-
-
-        // 3. Get Package If Assigned (Optional) Focus I Say The Package Is Optional .
-        var package = await GetPackageOrThrowAsync(member.PackageId, ct);
-
-
-
-        // 4. If All Good Map The Member To MemberResponse And Return It.
-        return ToResponse(member, membershipPlan.Type.ToString(), package?.Name);
-    }
-
-
-
     // Update Member Information
-    // ----------------------------------
-    public async Task<MemberResponse> UpdateAsync(int memberId,UpdateMemberRequest request,CancellationToken ct = default)
+    // -------------------
+    public async Task<MemberResponse> UpdateAsync(int memberId, UpdateMemberRequest request, CancellationToken ct = default)
     {
         // 1. Get Member By Id Or Throw NotFoundException If Not Found.
         var member = await GetMemberOrThrowAsync(memberId, ct);
@@ -105,6 +82,7 @@ public sealed class MemberService : IMemberService
         // 2. Normalize Email and Phone To Use Them In Uniqueness Checks And When The Checks Is Valide , I Can Save them.
         var normalizedEmail = request.Email.Trim().ToLowerInvariant();
         var normalizedPhone = request.Phone.Trim();
+
 
 
         // 3. Check Email uniqueness (exclude current member)
@@ -123,7 +101,7 @@ public sealed class MemberService : IMemberService
 
 
         // 6. Check Package exists (optional)  Focus I Say The Package is Optional .
-        var package = await GetPackageOrThrowAsync(request.PackageId,ct);
+        var package = await GetPackageOrThrowAsync(request.PackageId, ct);
 
 
 
@@ -151,25 +129,96 @@ public sealed class MemberService : IMemberService
 
 
         // 9. Map response
-        return ToResponse(member,membershipPlan.Type.ToString(),package?.Name);
+        return ToResponse(member, membershipPlan.Type.ToString(), package?.Name);
+    }
+
+
+    // Delete Member By Id
+    // -------------------
+    public async Task DeleteAsync(int memberId, CancellationToken ct = default)
+    {
+
+        // TODO:
+        // Replace hard delete with soft delete once the project
+        // supports audit logging and historical data retention.
+
+        // 1. Get Member By Id Or Throw NotFoundException If Not Found.
+        var member = await GetMemberOrThrowAsync(memberId, ct);
+
+
+        // 2. Ensure Member Has No Bookings
+        await EnsureMemberHasNoBookingsAsync(memberId, ct);
+
+
+        // 3. Delete Member
+        _uow.Members.Remove(member);
+
+
+        // 4. Save Changes
+        await _uow.SaveChangesAsync(ct);
     }
 
 
 
-    // Search Members With Pagination And Filtering => I Make it A Specific Repository Method.
-    // ----------------------------------
-    //public async task<pagedresult<memberlistitem>> searchasync(memberqueryrequest request, cancellationtoken ct = default)
-    //{
-    //}
+
+
+
+    // Read Operations  { GetByIdAsync , SearchAsync , GetProfileAsync }
+    // ===============================
+
+
+    // Get Member By Id
+    // -------------------
+    public async Task<MemberResponse> GetByIdAsync(int memberId,CancellationToken ct = default)
+    {
+        // 1. Get Member By Id Or Throw NotFoundException If Not Found.
+        var member = await GetMemberOrThrowAsync(memberId, ct);
+
+
+
+        // 2. Get MembershipPlan Or Throw NotFoundException If Not Found.
+        var membershipPlan = await GetMembershipPlanOrThrowAsync(member.MembershipPlanId, ct);
+
+
+
+        // 3. Get Package If Assigned (Optional) Focus I Say The Package Is Optional .
+        var package = await GetPackageOrThrowAsync(member.PackageId, ct);
+
+
+
+        // 4. If All Good Map The Member To MemberResponse And Return It.
+        return ToResponse(member, membershipPlan.Type.ToString(), package?.Name);
+    }
+
+
+    // Search Members With Pagination And Filtering
+    // -------------------
+    public Task<PagedResult<MemberListItem>> SearchAsync(MemberQueryRequest request,CancellationToken ct = default)
+    {
+        return _uow.Members.SearchAsync(request, ct);
+    }
+
+
+    // Get Member Profile
+    // -------------------
+    public async Task<MemberProfileResponse> GetProfileAsync(int memberId, CancellationToken ct = default)
+    {
+        // Get The Member Profile From The Repository And If Not Found Throw NotFoundException.
+        return await _uow.Members.GetProfileAsync(memberId, ct) 
+                                  ?? throw new NotFoundException("Member was not found.");
+    }
+
+
+
+
+
+
+    // Membership Management Operations
+    // ===============================
 
 
 
     public Task AssignPackageAsync(int memberId, int packageId, CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteAsync(int memberId, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -180,11 +229,6 @@ public sealed class MemberService : IMemberService
     }
 
     public Task FreezeMembershipAsync(int memberId, CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<MemberProfileResponse> GetProfileAsync(int memberId, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -206,7 +250,10 @@ public sealed class MemberService : IMemberService
 
 
 
+
+
     // Private Helper Methods For Business Rule Validations Can Be Added Here
+    // ===============================
 
     private async Task EnsureEmailIsUniqueAsync(string email, int? excludedMemberId, CancellationToken ct)
     {
@@ -254,6 +301,14 @@ public sealed class MemberService : IMemberService
             throw new NotFoundException("Member was not found.");
 
         return member;
+    }
+
+    private async Task EnsureMemberHasNoBookingsAsync(int memberId,CancellationToken ct)
+    {
+        var hasBookings = await _uow.Bookings.ExistsAsync(b => b.MemberId == memberId,ct);
+
+        if (hasBookings)
+            throw new BusinessException("Cannot delete a member because they have existing bookings.");
     }
 
     private static MemberResponse ToResponse(Member member,string membershipPlanName,string? packageName)

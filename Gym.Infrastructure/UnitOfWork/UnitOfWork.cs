@@ -8,8 +8,9 @@ public class UnitOfWork : IUnitOfWork
     private readonly GymDbContext _context;
     private readonly ConcurrentDictionary<Type, object> _repositories = new();
 
+
     // Expose repositories for each entity type
-    public IGenericRepository<Member> Members { get;}
+    public IMemberRepository Members { get; } // Use the specific repository interface for Members
     public IGenericRepository<Trainer> Trainers { get; }
     public IGenericRepository<Session> Sessions { get; }
     public IGenericRepository<Booking> Bookings { get; }
@@ -22,7 +23,7 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(GymDbContext context)
     {
         _context = context;
-        Members = new GenericRepository<Member>(_context);
+        Members = new MemberRepository(_context);
         Trainers = new GenericRepository<Trainer>(_context);
         Sessions = new GenericRepository<Session>(_context);
         Bookings = new GenericRepository<Booking>(_context);

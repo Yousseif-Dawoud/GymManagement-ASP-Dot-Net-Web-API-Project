@@ -2,21 +2,21 @@
 
 public class MemberRepository : GenericRepository<Member>, IMemberRepository
 {
-    public MemberRepository(GymDbContext context) : base(context)  { }
+    public MemberRepository(GymDbContext context) : base(context) { }
 
     // MemberRepository He Can Use the _context  Because He is Protected in the GenericRepository .
     // Foucus on The Order of Applying The Filters and Operations in The Search Method : 
-                                            //WHERE
-                                            //  ↓
-                                            //COUNT
-                                            //  ↓
-                                            //ORDER
-                                            //  ↓
-                                            //PAGINATION
-                                            //  ↓
-                                            //SELECT
+    //WHERE
+    //  ↓
+    //COUNT
+    //  ↓
+    //ORDER
+    //  ↓
+    //PAGINATION
+    //  ↓
+    //SELECT
 
-    public async Task<PagedResult<MemberListItem>> SearchAsync(MemberQueryRequest request,CancellationToken ct = default)
+    public async Task<PagedResult<MemberListItem>> SearchAsync(MemberQueryRequest request, CancellationToken ct = default)
     {
         // 1. Build the query And Start with the base query (All Members)
         var query = _context.Members.AsNoTracking().AsQueryable();
@@ -29,7 +29,7 @@ public class MemberRepository : GenericRepository<Member>, IMemberRepository
             var searchTerm = request.SearchTerm.Trim().ToLower();
 
             query = query.Where(m => m.FullName.ToLower().Contains(searchTerm) ||
-                                     m.Email.ToLower().Contains(searchTerm)    ||
+                                     m.Email.ToLower().Contains(searchTerm) ||
                                      m.Phone.Contains(searchTerm));
         }
 
@@ -38,7 +38,7 @@ public class MemberRepository : GenericRepository<Member>, IMemberRepository
         // 3. Apply Status Filter
         if (request.Status.HasValue)
         {
-            query = query.Where( m => m.Status == request.Status.Value);
+            query = query.Where(m => m.Status == request.Status.Value);
         }
 
 
@@ -46,7 +46,7 @@ public class MemberRepository : GenericRepository<Member>, IMemberRepository
         // 4. Apply Membership Plan Filter
         if (request.MembershipPlanId.HasValue)
         {
-            query = query.Where( m => m.MembershipPlanId == request.MembershipPlanId.Value);
+            query = query.Where(m => m.MembershipPlanId == request.MembershipPlanId.Value);
         }
 
 
@@ -82,4 +82,37 @@ public class MemberRepository : GenericRepository<Member>, IMemberRepository
                totalCount
         );
     }
+
+
+    // TODO:
+    // Extend MemberProfileResponse with statistics
+    // (Bookings, Attendance, Remaining Days, etc.)
+    // once the profile dashboard is implemented.
+    public async Task<MemberProfileResponse?> GetProfileAsync(int memberId,CancellationToken ct = default)
+        =>  await _context.Members
+            .AsNoTracking()
+            .Where(m => m.Id == memberId)
+            .Select(m => new MemberProfileResponse(
+                m.Id,
+                m.FullName,
+                m.Phone,
+                m.Email,
+                m.Gender,
+                m.DateOfBirth,
+                m.EmergencyContact,
+                m.Status,
+                m.MembershipStartDate,
+                m.MembershipEndDate,
+                m.MembershipPlanId,
+                m.MembershipPlan.Type,
+                m.PackageId,
+                m.Package != null ? m.Package.Name : null,
+
+                // TODO:
+                // Replace with the actual trainer assignment
+                // once the Personal Trainer feature is implemented.
+                false
+            ))
+            .FirstOrDefaultAsync(ct);
+    
 }
