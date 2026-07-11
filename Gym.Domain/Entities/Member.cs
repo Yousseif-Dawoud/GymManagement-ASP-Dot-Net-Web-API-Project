@@ -104,12 +104,15 @@ public class Member : BaseEntity
     // Membership Behaviors
     // =========================
 
-    public void RenewMembership(DateOnly newStartDate,DateOnly newEndDate)
+    public void RenewMembership(int membershipPlanId,DateOnly startDate,DateOnly endDate)
     {
-        ValidateMembershipDates(newStartDate,newEndDate);
-        MembershipStartDate = newStartDate;
-        MembershipEndDate = newEndDate;
+        ValidateMembershipDates(startDate, endDate);
+
+        MembershipPlanId = membershipPlanId;
+        MembershipStartDate = startDate;
+        MembershipEndDate = endDate;
         Status = MembershipStatus.Active;
+
         SetUpdated();
     }
 

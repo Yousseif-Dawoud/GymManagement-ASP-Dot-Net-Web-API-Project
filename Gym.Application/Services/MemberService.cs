@@ -265,11 +265,24 @@ public sealed class MemberService : IMemberService
     }
 
 
-    // Renew Membership For A Member
+    // Renew Member Membership
     // -------------------
-    public Task RenewMembershipAsync(int memberId, RenewMembershipRequest request, CancellationToken ct = default)
+    public async Task RenewMembershipAsync(int memberId,RenewMembershipRequest request,CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        // 1. Get Member Or Throw NotFoundException
+        var member = await GetMemberOrThrowAsync(memberId, ct);
+
+
+        // 2. Ensure Membership Plan Exists
+        await GetMembershipPlanOrThrowAsync(request.MembershipPlanId, ct);
+
+
+        // 3. Renew Membership
+        member.RenewMembership(request.MembershipPlanId,request.StartDate,request.EndDate);
+
+
+        // 4. Save Changes
+        await _uow.SaveChangesAsync(ct);
     }
 
 
