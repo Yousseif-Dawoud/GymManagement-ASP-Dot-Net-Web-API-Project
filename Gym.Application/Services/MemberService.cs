@@ -217,32 +217,80 @@ public sealed class MemberService : IMemberService
     // ===============================
 
 
-
-    public Task AssignPackageAsync(int memberId, int packageId, CancellationToken ct = default)
+    // Assign A Package To A Member
+    // -------------------
+    public async Task AssignPackageAsync(int memberId,int packageId,CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        // 1. Get Member By Id Or Throw NotFoundException If Not Found.
+        var member = await GetMemberOrThrowAsync(memberId, ct);
+
+
+        // 2. Get Package By Id Or Throw NotFoundException If Not Found.
+        var package = await GetPackageOrThrowAsync(packageId, ct);
+
+
+        // 3. Ensure member doesn't already have this package
+        if (member.PackageId == packageId)
+            throw new BusinessException("The member is already assigned to this package.");
+
+
+        // 4. Assign Package To Member
+        member.AssignPackage(packageId);
+
+
+        // 5. Save Changes
+        await _uow.SaveChangesAsync(ct);
     }
 
-    public Task ExpireMembershipAsync(int memberId, CancellationToken ct = default)
+
+    // Remove A Package From A Member
+    // -------------------
+    public async Task RemovePackageAsync(int memberId, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        // 1. Get Member By Id Or Throw NotFoundException If Not Found.
+        var member = await GetMemberOrThrowAsync(memberId, ct);
+
+
+        // 2. Ensure Member Has A Package Assigned
+        if (!member.PackageId.HasValue)
+            throw new BusinessException("The member does not have a package assigned.");
+
+
+        // 3. Remove Package From Member
+        member.RemovePackage();
+
+
+        // 4. Save Changes
+        await _uow.SaveChangesAsync(ct);
     }
 
-    public Task FreezeMembershipAsync(int memberId, CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
 
-    public Task RemovePackageAsync(int memberId, CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
-
+    // Renew Membership For A Member
+    // -------------------
     public Task RenewMembershipAsync(int memberId, RenewMembershipRequest request, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
 
+
+    // Expire Membership For A Member
+    // -------------------
+    public Task ExpireMembershipAsync(int memberId, CancellationToken ct = default)
+    {
+        throw new NotImplementedException();
+    }
+
+
+    // Freeze Membership For A Member
+    // -------------------
+    public Task FreezeMembershipAsync(int memberId, CancellationToken ct = default)
+    {
+        throw new NotImplementedException();
+    }
+
+
+    // Unfreeze Membership For A Member
+    // -------------------
     public Task UnfreezeMembershipAsync(int memberId, CancellationToken ct = default)
     {
         throw new NotImplementedException();

@@ -147,6 +147,9 @@ public class Member : BaseEntity
     // =========================
     public void AssignPackage(int packageId)
     {
+        if (PackageId == packageId)
+            return;
+
         PackageId = packageId;
 
         SetUpdated();
@@ -154,6 +157,9 @@ public class Member : BaseEntity
 
     public void RemovePackage()
     {
+        if (PackageId is null)
+            return;
+
         PackageId = null;
 
         SetUpdated();
