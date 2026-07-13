@@ -8,12 +8,11 @@ public sealed class MemberService : IMemberService
 
 
 
-    // Write Operations  { CreateAsync , UpdateAsync , DeleteAsync }  
-    // ===============================
-
-
+    // Write Operations :   
     // Create A New Member
-    // -------------------
+    // Update Member Information
+    // Delete Member By Id
+
     public async Task<MemberResponse> CreateAsync(CreateMemberRequest request, CancellationToken ct = default)
     {
         // 1. Normalize Email and Phone To Use Them In Uniqueness Checks And When The Checks Is Valide , I Can Save them.
@@ -68,10 +67,6 @@ public sealed class MemberService : IMemberService
         // 8. Map response
         return ToResponse(member,membershipPlan.Type.ToString(),package?.Name);
     }
-
-
-    // Update Member Information
-    // -------------------
     public async Task<MemberResponse> UpdateAsync(int memberId, UpdateMemberRequest request, CancellationToken ct = default)
     {
         // 1. Get Member By Id Or Throw NotFoundException If Not Found.
@@ -131,10 +126,6 @@ public sealed class MemberService : IMemberService
         // 9. Map response
         return ToResponse(member, membershipPlan.Type.ToString(), package?.Name);
     }
-
-
-    // Delete Member By Id
-    // -------------------
     public async Task DeleteAsync(int memberId, CancellationToken ct = default)
     {
 
@@ -147,7 +138,7 @@ public sealed class MemberService : IMemberService
 
 
         // 2. Ensure Member Has No Bookings
-        await EnsureMemberHasNoBookingsAsync(memberId, ct);
+        await EnsureMemberCanBeDeletedAsync(memberId, ct);
 
 
         // 3. Delete Member
@@ -161,14 +152,11 @@ public sealed class MemberService : IMemberService
 
 
 
-
-
-    // Read Operations  { GetByIdAsync , SearchAsync , GetProfileAsync }
-    // ===============================
-
-
+    // Read Operations :
     // Get Member By Id
-    // -------------------
+    // Search Members With Pagination And Filtering
+    // Get Member Profile
+
     public async Task<MemberResponse> GetByIdAsync(int memberId,CancellationToken ct = default)
     {
         // 1. Get Member By Id Or Throw NotFoundException If Not Found.
@@ -189,18 +177,10 @@ public sealed class MemberService : IMemberService
         // 4. If All Good Map The Member To MemberResponse And Return It.
         return ToResponse(member, membershipPlan.Type.ToString(), package?.Name);
     }
-
-
-    // Search Members With Pagination And Filtering
-    // -------------------
     public Task<PagedResult<MemberListItem>> SearchAsync(MemberQueryRequest request,CancellationToken ct = default)
     {
         return _uow.Members.SearchAsync(request, ct);
     }
-
-
-    // Get Member Profile
-    // -------------------
     public async Task<MemberProfileResponse> GetProfileAsync(int memberId, CancellationToken ct = default)
     {
         // Get The Member Profile From The Repository And If Not Found Throw NotFoundException.
@@ -211,14 +191,14 @@ public sealed class MemberService : IMemberService
 
 
 
-
-
-    // Membership Management Operations
-    // ===============================
-
-
+    // Membership Management Operations :
     // Assign A Package To A Member
-    // -------------------
+    // Remove A Package From A Member
+    // Renew Member Membership
+    // Expire Membership For A Member
+    // Freeze Membership For A Member
+    // Unfreeze Membership For A Member
+
     public async Task AssignPackageAsync(int memberId,int packageId,CancellationToken ct = default)
     {
         // 1. Get Member By Id Or Throw NotFoundException If Not Found.
@@ -241,10 +221,6 @@ public sealed class MemberService : IMemberService
         // 5. Save Changes
         await _uow.SaveChangesAsync(ct);
     }
-
-
-    // Remove A Package From A Member
-    // -------------------
     public async Task RemovePackageAsync(int memberId, CancellationToken ct = default)
     {
         // 1. Get Member By Id Or Throw NotFoundException If Not Found.
@@ -263,10 +239,6 @@ public sealed class MemberService : IMemberService
         // 4. Save Changes
         await _uow.SaveChangesAsync(ct);
     }
-
-
-    // Renew Member Membership
-    // -------------------
     public async Task RenewMembershipAsync(int memberId,RenewMembershipRequest request,CancellationToken ct = default)
     {
         // 1. Get Member Or Throw NotFoundException
@@ -284,37 +256,50 @@ public sealed class MemberService : IMemberService
         // 4. Save Changes
         await _uow.SaveChangesAsync(ct);
     }
-
-
-    // Expire Membership For A Member
-    // -------------------
-    public Task ExpireMembershipAsync(int memberId, CancellationToken ct = default)
+    public async Task ExpireMembershipAsync(int memberId,CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        // 1. Get Member Or Throw NotFoundException
+        var member = await GetMemberOrThrowAsync(memberId, ct);
+
+
+        // 2. Expire Membership
+        member.ExpireMembership();
+
+
+        // 3. Save Changes
+        await _uow.SaveChangesAsync(ct);
     }
-
-
-    // Freeze Membership For A Member
-    // -------------------
-    public Task FreezeMembershipAsync(int memberId, CancellationToken ct = default)
+    public async Task FreezeMembershipAsync(int memberId,CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        // 1. Get Member Or Throw NotFoundException
+        var member = await GetMemberOrThrowAsync(memberId, ct);
+
+
+        // 2. Freeze Membership
+        member.FreezeMembership();
+
+
+        // 3. Save Changes
+        await _uow.SaveChangesAsync(ct);
     }
-
-
-    // Unfreeze Membership For A Member
-    // -------------------
-    public Task UnfreezeMembershipAsync(int memberId, CancellationToken ct = default)
+    public async Task UnfreezeMembershipAsync(int memberId,CancellationToken ct = default)
     {
-        throw new NotImplementedException();
-    }
+        // 1. Get Member Or Throw NotFoundException
+        var member = await GetMemberOrThrowAsync(memberId, ct);
 
+
+        // 2. Unfreeze Membership
+        member.UnfreezeMembership();
+
+
+        // 3. Save Changes
+        await _uow.SaveChangesAsync(ct);
+    }
 
 
 
 
     // Private Helper Methods For Business Rule Validations Can Be Added Here
-    // ===============================
 
     private async Task EnsureEmailIsUniqueAsync(string email, int? excludedMemberId, CancellationToken ct)
     {
@@ -324,7 +309,6 @@ public sealed class MemberService : IMemberService
 
         if (exists)  throw new BusinessException("A member with this email already exists.");
     }
-
     private async Task EnsurePhoneIsUniqueAsync(string phone,int? excludedMemberId,CancellationToken ct)
     {
         // "اتأكد مفيش حد تاني غيري عنده نفس القيمة"
@@ -333,7 +317,6 @@ public sealed class MemberService : IMemberService
 
         if (exists)   throw new BusinessException("A member with this phone number already exists.");
     }
-
     private async Task<MembershipPlan> GetMembershipPlanOrThrowAsync (int membershipPlanId, CancellationToken ct)
     {
         var membershipPlan = await _uow.MembershipPlans.GetByIdAsync(membershipPlanId, ct);
@@ -342,7 +325,6 @@ public sealed class MemberService : IMemberService
 
         return membershipPlan;
     }
-
     private async Task<Package?> GetPackageOrThrowAsync(int? packageId,CancellationToken ct)
     {
         if ( ! packageId.HasValue)  return null;
@@ -353,7 +335,6 @@ public sealed class MemberService : IMemberService
         
         return package;
     }
-
     private async Task<Member> GetMemberOrThrowAsync(int memberId,CancellationToken ct)
     {
         var member = await _uow.Members.GetByIdAsync(memberId, ct);
@@ -363,15 +344,13 @@ public sealed class MemberService : IMemberService
 
         return member;
     }
-
-    private async Task EnsureMemberHasNoBookingsAsync(int memberId,CancellationToken ct)
+    private async Task EnsureMemberCanBeDeletedAsync(int memberId,CancellationToken ct)
     {
         var hasBookings = await _uow.Bookings.ExistsAsync(b => b.MemberId == memberId,ct);
 
         if (hasBookings)
-            throw new BusinessException("Cannot delete a member because they have existing bookings.");
+            throw new BusinessException("Member cannot be deleted because they have existing bookings.");
     }
-
     private static MemberResponse ToResponse(Member member,string membershipPlanName,string? packageName)
     {
         return new MemberResponse(

@@ -128,7 +128,7 @@ public class Member : BaseEntity
 
     public void FreezeMembership()
     {
-        if (Status == MembershipStatus.Frozen)
+        if (Status != MembershipStatus.Active)
             return;
 
         Status = MembershipStatus.Frozen;

@@ -11,5 +11,10 @@ public sealed class RenewMembershipRequestValidator : AbstractValidator<RenewMem
         RuleFor(x => x.EndDate)
             .GreaterThan(x => x.StartDate)
             .WithMessage("Membership end date must be after start date.");
+
+        RuleFor(x => x.StartDate)
+             .NotEmpty()
+             .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today))
+             .WithMessage("Membership start date cannot be in the past.");
     }
 }
