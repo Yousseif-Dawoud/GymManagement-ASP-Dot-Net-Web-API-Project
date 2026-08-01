@@ -29,7 +29,7 @@ public interface IMemberService
 {
     // Read Operations And Queries For Member Entity : Why i make it comment ? Because i will Apply Specification Pattern For Search Operation And Get All Operation To Make It More Flexible And Reusable For Any Entity In The Future So I Will Implement It Later When I Implement Specification Pattern For The Project .
     // -----------------------------------
-    //Task<PagedResult<MemberListItem>> SearchAsync(MemberQueryRequest request,CancellationToken ct = default); // GetAll 
+    Task<PagedResult<MemberListItem>> SearchAsync(MemberQueryRequest request,CancellationToken ct = default); // GetAll 
 
     Task<MemberResponse> GetByIdAsync(int memberId,CancellationToken ct = default);
 

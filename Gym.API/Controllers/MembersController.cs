@@ -1,4 +1,5 @@
 ﻿
+using Gym.Application.Common;
 using Gym.Application.DTOs.Members;
 
 namespace Gym.API.Controllers;
@@ -37,6 +38,20 @@ public class MembersController : ControllerBase
 
 
         // 2.Return a 200 OK response with the member data
+        return Ok(result);
+    }
+
+
+
+    [HttpGet]
+    [ProducesResponseType(typeof(PagedResult<MemberListItem>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResult<MemberListItem>>> GetAll([FromQuery] MemberQueryRequest request,CancellationToken ct)
+    {
+        // 1.Call the service to search for members based on the query request
+        var result = await _memberService.SearchAsync(request, ct);
+
+
+        // 2.Return a 200 OK response with the paged result of members
         return Ok(result);
     }
 
