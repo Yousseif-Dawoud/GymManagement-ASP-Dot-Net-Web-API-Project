@@ -1,7 +1,4 @@
 ﻿
-using Gym.Application.Common;
-using Gym.Application.DTOs.Members;
-
 namespace Gym.API.Controllers;
 
 [ApiController]

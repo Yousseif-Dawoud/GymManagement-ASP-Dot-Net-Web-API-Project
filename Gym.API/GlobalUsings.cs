@@ -14,5 +14,7 @@ global using Gym.Application.Validators.Members;
 global using System.Text.Json.Serialization;
 global using Gym.Application.Common.Responses;
 global using Gym.Domain.Exceptions;
+global using Gym.Application.Common;
+global using Gym.Application.DTOs.Members;
 
 
