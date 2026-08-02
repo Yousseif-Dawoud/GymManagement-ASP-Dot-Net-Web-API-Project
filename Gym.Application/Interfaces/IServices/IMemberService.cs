@@ -59,7 +59,7 @@ public interface IMemberService
 
 
     // Package Operations For Member :
-    Task AssignPackageAsync(int memberId,int packageId,CancellationToken ct = default);
+    Task<MemberResponse> AssignPackageAsync(int memberId,int packageId,CancellationToken ct = default);
 
     Task RemovePackageAsync(int memberId,CancellationToken ct = default);
 

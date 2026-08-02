@@ -199,7 +199,7 @@ public sealed class MemberService : IMemberService
     // Freeze Membership For A Member
     // Unfreeze Membership For A Member
 
-    public async Task AssignPackageAsync(int memberId,int packageId,CancellationToken ct = default)
+    public async Task<MemberResponse> AssignPackageAsync(int memberId, int packageId, CancellationToken ct = default)
     {
         // 1. Get Member By Id Or Throw NotFoundException If Not Found.
         var member = await GetMemberOrThrowAsync(memberId, ct);
@@ -220,7 +220,18 @@ public sealed class MemberService : IMemberService
 
         // 5. Save Changes
         await _uow.SaveChangesAsync(ct);
+
+
+        // 6. Get MembershipPlan Or Throw NotFoundException If Not Found.
+        var membershipPlan = await GetMembershipPlanOrThrowAsync(member.MembershipPlanId, ct);
+
+
+        // 7. Map response
+        return ToResponse(member, membershipPlan.Type.ToString(), package?.Name);
+
     }
+
+
     public async Task RemovePackageAsync(int memberId, CancellationToken ct = default)
     {
         // 1. Get Member By Id Or Throw NotFoundException If Not Found.

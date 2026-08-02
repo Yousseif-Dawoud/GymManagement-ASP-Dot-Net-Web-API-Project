@@ -98,5 +98,14 @@ public class MembersController : ControllerBase
 
 
 
-    
+    [HttpPut("{memberId:int}/package")]
+    [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<MemberResponse>> AssignPackage([FromRoute] int memberId,[FromBody] AssignPackageRequest request,CancellationToken ct)
+    {
+        var result = await _memberService.AssignPackageAsync(memberId,request.PackageId,ct);
+
+        return Ok(result);
+    }
 }
