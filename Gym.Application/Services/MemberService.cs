@@ -225,8 +225,6 @@ public sealed class MemberService : IMemberService
         // 6. Return Updated Member Response
         return await BuildMemberResponseAsync(member,package?.Name,ct);
     }
-
-
     public async Task RemovePackageAsync(int memberId, CancellationToken ct = default)
     {
         // 1. Get Member By Id Or Throw NotFoundException If Not Found.
@@ -245,6 +243,7 @@ public sealed class MemberService : IMemberService
         // 4. Save Changes
         await _uow.SaveChangesAsync(ct);
     }
+
     public async Task RenewMembershipAsync(int memberId,RenewMembershipRequest request,CancellationToken ct = default)
     {
         // 1. Get Member Or Throw NotFoundException
