@@ -222,13 +222,8 @@ public sealed class MemberService : IMemberService
         await _uow.SaveChangesAsync(ct);
 
 
-        // 6. Get MembershipPlan Or Throw NotFoundException If Not Found.
-        var membershipPlan = await GetMembershipPlanOrThrowAsync(member.MembershipPlanId, ct);
-
-
-        // 7. Map response
-        return ToResponse(member, membershipPlan.Type.ToString(), package?.Name);
-
+        // 6. Return Updated Member Response
+        return await BuildMemberResponseAsync(member,package?.Name,ct);
     }
 
 
@@ -361,6 +356,12 @@ public sealed class MemberService : IMemberService
 
         if (hasBookings)
             throw new BusinessException("Member cannot be deleted because they have existing bookings.");
+    }
+    private async Task<MemberResponse> BuildMemberResponseAsync(Member member,string? packageName,CancellationToken ct)
+    {
+        var membershipPlan =await GetMembershipPlanOrThrowAsync(member.MembershipPlanId, ct);
+
+        return ToResponse(member,membershipPlan.Type.ToString(),packageName);
     }
     private static MemberResponse ToResponse(Member member,string membershipPlanName,string? packageName)
     {
