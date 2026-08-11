@@ -102,10 +102,10 @@ public class MembersController : ControllerBase
     [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<MemberResponse>> AssignPackage([FromRoute] int memberId,[FromBody] AssignPackageRequest request,CancellationToken ct)
+    public async Task<ActionResult<MemberResponse>> AssignPackage([FromRoute] int memberId, [FromBody] AssignPackageRequest request, CancellationToken ct)
     {
         // 1.Call the service to assign a package to the member with the specified ID
-        var result = await _memberService.AssignPackageAsync(memberId,request.PackageId,ct);
+        var result = await _memberService.AssignPackageAsync(memberId, request.PackageId, ct);
 
 
         // 2.Return a 200 OK response with the updated member data
@@ -129,6 +129,65 @@ public class MembersController : ControllerBase
 
 
 
+    [HttpPut("{memberId:int}/membership")]
+    [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<MemberResponse>> RenewMembership([FromRoute] int memberId, [FromBody] RenewMembershipRequest request, CancellationToken ct)
+    {
+        // 1.Call the service to renew the member's membership
+        var result = await _memberService.RenewMembershipAsync(memberId, request, ct);
 
 
+        // 2.Return a 200 OK response with the updated member data
+        return Ok(result);
+    }
+
+
+
+    [HttpPut("{memberId:int}/membership/freeze")]
+    [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<MemberResponse>> FreezeMembership([FromRoute] int memberId, CancellationToken ct)
+    {
+        // 1.Call the service to freeze the member's membership
+        var result = await _memberService.FreezeMembershipAsync(memberId, ct);
+
+
+        // 2.Return updated member
+        return Ok(result);
+    }
+
+
+
+    [HttpPut("{memberId:int}/membership/unfreeze")]
+    [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<MemberResponse>> UnfreezeMembership([FromRoute] int memberId, CancellationToken ct)
+    {
+        // 1.Call the service to unfreeze the member's membership
+        var result = await _memberService.UnfreezeMembershipAsync(memberId, ct);
+
+
+        // 2.Return updated member
+        return Ok(result);
+    }
+
+
+
+    [HttpPut("{memberId:int}/membership/expire")]
+    [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<MemberResponse>> ExpireMembership([FromRoute] int memberId, CancellationToken ct)
+    {
+        // 1.Call the service to expire the member's membership
+        var result = await _memberService.ExpireMembershipAsync(memberId, ct);
+
+
+        // 2.Return updated member
+        return Ok(result);
+    }
 }

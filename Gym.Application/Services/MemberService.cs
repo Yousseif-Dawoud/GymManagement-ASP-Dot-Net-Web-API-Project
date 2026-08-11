@@ -266,23 +266,6 @@ public sealed class MemberService : IMemberService
         // 5. Return Updated Member Response
         return await BuildMemberResponseAsync(member, ct);
     }
-    public async Task<MemberResponse> ExpireMembershipAsync(int memberId,CancellationToken ct = default)
-    {
-        // 1. Get Member Or Throw NotFoundException
-        var member = await GetMemberOrThrowAsync(memberId, ct);
-
-
-        // 2. Expire Membership
-        member.ExpireMembership();
-
-
-        // 3. Save Changes
-        await _uow.SaveChangesAsync(ct);
-
-
-        // 4. Return Updated Member Response
-        return await BuildMemberResponseAsync(member, ct);
-    }
     public async Task<MemberResponse> FreezeMembershipAsync(int memberId,CancellationToken ct = default)
     {
         // 1. Get Member Or Throw NotFoundException
@@ -317,7 +300,23 @@ public sealed class MemberService : IMemberService
         // 4. Return Updated Member Response
         return await BuildMemberResponseAsync(member, ct);
     }
+    public async Task<MemberResponse> ExpireMembershipAsync(int memberId, CancellationToken ct = default)
+    {
+        // 1. Get Member Or Throw NotFoundException
+        var member = await GetMemberOrThrowAsync(memberId, ct);
 
+
+        // 2. Expire Membership
+        member.ExpireMembership();
+
+
+        // 3. Save Changes
+        await _uow.SaveChangesAsync(ct);
+
+
+        // 4. Return Updated Member Response
+        return await BuildMemberResponseAsync(member, ct);
+    }
 
 
 
@@ -391,7 +390,7 @@ public sealed class MemberService : IMemberService
 
 
             // 4. Set Package Name
-            packageName = package.Name;
+            packageName = package?.Name;
         }
 
         // 5. Map The Member To MemberResponse And Return It.
