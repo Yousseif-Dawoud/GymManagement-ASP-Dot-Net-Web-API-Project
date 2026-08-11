@@ -104,8 +104,27 @@ public class MembersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<MemberResponse>> AssignPackage([FromRoute] int memberId,[FromBody] AssignPackageRequest request,CancellationToken ct)
     {
+        // 1.Call the service to assign a package to the member with the specified ID
         var result = await _memberService.AssignPackageAsync(memberId,request.PackageId,ct);
 
+
+        // 2.Return a 200 OK response with the updated member data
         return Ok(result);
     }
+
+
+
+    [HttpDelete("{memberId:int}/package")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemovePackage([FromRoute] int memberId, CancellationToken ct)
+    {
+        // 1.// Remove the assigned package
+        await _memberService.RemovePackageAsync(memberId, ct);
+
+
+        // 2.Return a 204 No Content response
+        return NoContent();
+    }
+
 }
