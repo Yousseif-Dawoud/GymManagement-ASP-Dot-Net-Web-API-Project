@@ -223,7 +223,7 @@ public sealed class MemberService : IMemberService
 
 
         // 6. Return Updated Member Response
-        return await BuildMemberResponseAsync(member,package?.Name,ct);
+        return await BuildMemberResponseAsync(member,ct);
     }
     public async Task RemovePackageAsync(int memberId, CancellationToken ct = default)
     {
@@ -244,7 +244,8 @@ public sealed class MemberService : IMemberService
         await _uow.SaveChangesAsync(ct);
     }
 
-    public async Task RenewMembershipAsync(int memberId,RenewMembershipRequest request,CancellationToken ct = default)
+
+    public async Task<MemberResponse> RenewMembershipAsync(int memberId,RenewMembershipRequest request,CancellationToken ct = default)
     {
         // 1. Get Member Or Throw NotFoundException
         var member = await GetMemberOrThrowAsync(memberId, ct);
@@ -260,8 +261,12 @@ public sealed class MemberService : IMemberService
 
         // 4. Save Changes
         await _uow.SaveChangesAsync(ct);
+
+
+        // 5. Return Updated Member Response
+        return await BuildMemberResponseAsync(member, ct);
     }
-    public async Task ExpireMembershipAsync(int memberId,CancellationToken ct = default)
+    public async Task<MemberResponse> ExpireMembershipAsync(int memberId,CancellationToken ct = default)
     {
         // 1. Get Member Or Throw NotFoundException
         var member = await GetMemberOrThrowAsync(memberId, ct);
@@ -273,8 +278,12 @@ public sealed class MemberService : IMemberService
 
         // 3. Save Changes
         await _uow.SaveChangesAsync(ct);
+
+
+        // 4. Return Updated Member Response
+        return await BuildMemberResponseAsync(member, ct);
     }
-    public async Task FreezeMembershipAsync(int memberId,CancellationToken ct = default)
+    public async Task<MemberResponse> FreezeMembershipAsync(int memberId,CancellationToken ct = default)
     {
         // 1. Get Member Or Throw NotFoundException
         var member = await GetMemberOrThrowAsync(memberId, ct);
@@ -286,8 +295,12 @@ public sealed class MemberService : IMemberService
 
         // 3. Save Changes
         await _uow.SaveChangesAsync(ct);
+
+
+        // 4. Return Updated Member Response
+        return await BuildMemberResponseAsync(member, ct);
     }
-    public async Task UnfreezeMembershipAsync(int memberId,CancellationToken ct = default)
+    public async Task<MemberResponse> UnfreezeMembershipAsync(int memberId,CancellationToken ct = default)
     {
         // 1. Get Member Or Throw NotFoundException
         var member = await GetMemberOrThrowAsync(memberId, ct);
@@ -299,7 +312,13 @@ public sealed class MemberService : IMemberService
 
         // 3. Save Changes
         await _uow.SaveChangesAsync(ct);
+
+
+        // 4. Return Updated Member Response
+        return await BuildMemberResponseAsync(member, ct);
     }
+
+
 
 
 
@@ -356,10 +375,26 @@ public sealed class MemberService : IMemberService
         if (hasBookings)
             throw new BusinessException("Member cannot be deleted because they have existing bookings.");
     }
-    private async Task<MemberResponse> BuildMemberResponseAsync(Member member,string? packageName,CancellationToken ct)
+    private async Task<MemberResponse> BuildMemberResponseAsync(Member member,CancellationToken ct)
     {
-        var membershipPlan =await GetMembershipPlanOrThrowAsync(member.MembershipPlanId, ct);
+        // 1. Get MembershipPlan Or Throw NotFoundException If Not Found.
+        var membershipPlan = await GetMembershipPlanOrThrowAsync(member.MembershipPlanId, ct);
 
+
+        // 2. Get Package If Assigned (Optional) Focus I Say The Package Is Optional .
+        string? packageName = null;
+
+        if (member.PackageId.HasValue)
+        {
+            // 3. Get Package Or Throw NotFoundException If Not Found.
+            var package = await GetPackageOrThrowAsync(member.PackageId.Value, ct);
+
+
+            // 4. Set Package Name
+            packageName = package.Name;
+        }
+
+        // 5. Map The Member To MemberResponse And Return It.
         return ToResponse(member,membershipPlan.Type.ToString(),packageName);
     }
     private static MemberResponse ToResponse(Member member,string membershipPlanName,string? packageName)

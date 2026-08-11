@@ -48,13 +48,10 @@ public interface IMemberService
 
 
     // Membership Use Case Operations For Member  :
-    Task RenewMembershipAsync(int memberId,RenewMembershipRequest request,CancellationToken ct = default);
-
-    Task FreezeMembershipAsync( int memberId,CancellationToken ct = default);
-
-    Task UnfreezeMembershipAsync(int memberId,CancellationToken ct = default);
-
-    Task ExpireMembershipAsync(int memberId,CancellationToken ct = default);
+    Task<MemberResponse> RenewMembershipAsync(int memberId,RenewMembershipRequest request,CancellationToken ct = default);
+    Task<MemberResponse> FreezeMembershipAsync( int memberId,CancellationToken ct = default);
+    Task<MemberResponse> UnfreezeMembershipAsync(int memberId,CancellationToken ct = default);
+    Task<MemberResponse> ExpireMembershipAsync(int memberId,CancellationToken ct = default);
 
 
 
