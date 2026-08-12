@@ -10,6 +10,7 @@ public sealed class CreateMemberRequestValidator
             .MaximumLength(150);
 
         RuleFor(x => x.Phone)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .Matches(@"^(01[0125][0-9]{8}|\+201[0125][0-9]{8})$")
             .WithMessage(
