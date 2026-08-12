@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Ahmed Mohamed",
+    "request": {
+      "fullName": "Ahmed Mohamed",
+      "phone": "01012345678",
+      "email": "ahmed@gmail.com",
+      "gender": 1,
+      "dateOfBirth": "2000-05-10",
+      "emergencyContact": "01099999999",
+      "membershipStartDate": "2026-08-12",
+      "membershipEndDate": "2026-09-12",
+      "membershipPlanId": 1,
+      "packageId": null
+    }
+  },
+  {
+    "name": "Omar Hassan",
+    "request": {
+      "fullName": "Omar Hassan",
+      "phone": "01123456789",
+      "email": "omar.hassan@gmail.com",
+      "gender": 1,
+      "dateOfBirth": "1998-03-15",
+      "emergencyContact": "01234567890",
+      "membershipStartDate": "2026-08-12",
+      "membershipEndDate": "2026-09-12",
+      "membershipPlanId": 2,
+      "packageId": null
+    }
+  },
+  {
+    "name": "Sara Ali",
+    "request": {
+      "fullName": "Sara Ali",
+      "phone": "01223456789",
+      "email": "sara.ali@gmail.com",
+      "gender": 2,
+      "dateOfBirth": "1999-11-20",
+      "emergencyContact": "01098765432",
+      "membershipStartDate": "2026-08-12",
+      "membershipEndDate": "2026-09-12",
+      "membershipPlanId": 3,
+      "packageId": null
+    }
+  }
+]
