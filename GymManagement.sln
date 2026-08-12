@@ -28,6 +28,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API-Tests", "API-Tests", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Postman", "Postman", "{195A49EA-B145-473E-9D7B-E947D0C7DCDC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{F803090D-F7BF-4F0E-9C2D-AC05E65D22D6}"
+	ProjectSection(SolutionItems) = preProject
+		Seed-MembershipPlans.sql = Seed-MembershipPlans.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +98,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C52C7CCC-726B-4D51-8142-266BD0D46C2B} = {0B6FCD1F-4E8B-48FE-8E37-2556C8EC4789}
 		{195A49EA-B145-473E-9D7B-E947D0C7DCDC} = {0B6FCD1F-4E8B-48FE-8E37-2556C8EC4789}
+		{F803090D-F7BF-4F0E-9C2D-AC05E65D22D6} = {0B6FCD1F-4E8B-48FE-8E37-2556C8EC4789}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {54E9907F-3D11-4538-A4D0-3B567703B093}
