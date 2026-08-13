@@ -36,7 +36,7 @@ public sealed class GlobalExceptionMiddleware : IMiddleware
         // =========================
         // Business Rule
         // =========================
-        catch (BusinessRuleException ex)
+        catch (BusinessException ex)
         {
             await HandleExceptionAsync(
                 context,
