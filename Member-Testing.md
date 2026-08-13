@@ -115,3 +115,64 @@ Create Member with an invalid Egyptian phone number.
 
 
 ---------------------------------
+
+# Test Case #4 - Create Member With Duplicate Email
+
+## Objective
+Verify that the API prevents creating two members with the same email.
+
+---
+
+## Endpoint
+POST /api/Members
+
+---
+
+## Request Body
+```json
+{
+  "fullName": "Ahmed Mohamed",
+  "phone": "01011112222",
+  "email": "ahmed@gmail.com",
+  "gender": "Male",
+  "dateOfBirth": "2000-05-10",
+  "emergencyContact": "01099999999",
+  "membershipStartDate": "2026-08-12",
+  "membershipEndDate": "2026-09-12",
+  "membershipPlanId": 1
+}
+```
+
+---
+
+## Expected Result
+* Status Code: **400 Bad Request**
+* BusinessException should be thrown.
+* No new member should be inserted into the database.
+
+---
+
+## Actual Result
+Status Code:
+400 Bad Request
+Response:
+
+```json
+{
+  "success": false,
+  "message": "A member with this email already exists.",
+  "data": null,
+  "errors": null,
+  "statusCode": 400
+}
+```
+Database:
+* No new record inserted.
+
+---
+
+## Result
+✅ Passed
+
+---------------------------------
+
