@@ -40,7 +40,8 @@ public class MembersController : ControllerBase
 
 
 
-    [HttpGet("{memberId:int}")]
+    //[HttpGet("{memberId:int}")] // If User Input a invalid memberId as intger But This Number is a Nigative .
+    [HttpGet("{memberId:int:min(1)}")] 
     [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<MemberResponse>> GetById([FromRoute] int memberId, CancellationToken ct)
     {
@@ -54,7 +55,7 @@ public class MembersController : ControllerBase
 
 
 
-    [HttpGet("{memberId:int}/profile")]
+    [HttpGet("{memberId:int:min(1)}/profile")]
     [ProducesResponseType(typeof(MemberProfileResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MemberProfileResponse>> GetProfile([FromRoute] int memberId, CancellationToken ct)
@@ -69,7 +70,7 @@ public class MembersController : ControllerBase
 
 
 
-    [HttpPut("{memberId:int}")]
+    [HttpPut("{memberId:int:min(1)}")]
     [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<MemberResponse>> Update([FromRoute] int memberId, [FromBody] UpdateMemberRequest request, CancellationToken ct)
     {
@@ -83,7 +84,7 @@ public class MembersController : ControllerBase
 
 
 
-    [HttpDelete("{memberId:int}")]
+    [HttpDelete("{memberId:int:min(1)}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] int memberId, CancellationToken ct)
@@ -98,7 +99,7 @@ public class MembersController : ControllerBase
 
 
 
-    [HttpPut("{memberId:int}/package")]
+    [HttpPut("{memberId:int:min(1)}/package")]
     [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -114,7 +115,7 @@ public class MembersController : ControllerBase
 
 
 
-    [HttpDelete("{memberId:int}/package")]
+    [HttpDelete("{memberId:int:min(1)}/package")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemovePackage([FromRoute] int memberId, CancellationToken ct)
@@ -129,7 +130,7 @@ public class MembersController : ControllerBase
 
 
 
-    [HttpPut("{memberId:int}/membership")]
+    [HttpPut("{memberId:int:min(1)}/membership")]
     [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -145,7 +146,7 @@ public class MembersController : ControllerBase
 
 
 
-    [HttpPut("{memberId:int}/membership/freeze")]
+    [HttpPut("{memberId:int:min(1)}/membership/freeze")]
     [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -161,7 +162,7 @@ public class MembersController : ControllerBase
 
 
 
-    [HttpPut("{memberId:int}/membership/unfreeze")]
+    [HttpPut("{memberId:int:min(1)}/membership/unfreeze")]
     [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -177,7 +178,7 @@ public class MembersController : ControllerBase
 
 
 
-    [HttpPut("{memberId:int}/membership/expire")]
+    [HttpPut("{memberId:int:min(1)}/membership/expire")]
     [ProducesResponseType(typeof(MemberResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
