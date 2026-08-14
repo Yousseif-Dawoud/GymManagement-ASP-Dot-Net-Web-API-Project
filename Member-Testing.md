@@ -176,3 +176,67 @@ Database:
 
 ---------------------------------
 
+
+# Test Case #5 - Get Existing Member By Id
+
+## Objective
+Verify that the API returns the member details successfully when a valid member ID is provided.
+
+---
+
+## Endpoint
+GET /api/Members/1
+
+---
+
+## Expected Result
+* Status Code: **200 OK**
+* Returns the member information.
+* No changes should occur in the database.
+* No exception should be thrown.
+
+---
+
+## Actual Result
+Status Code:
+200 OK
+Response:
+```json
+{
+  "id": 1,
+  "fullName": "Ahmed Mohamed",
+  "phone": "01012345678",
+  "email": "ahmed@gmail.com",
+  "gender": "Male",
+  "dateOfBirth": "2000-05-10",
+  "emergencyContact": "01099999999",
+  "status": "Active",
+  "membershipStartDate": "2026-08-12",
+  "membershipEndDate": "2026-09-12",
+  "membershipPlanId": 1,
+  "membershipPlanName": "Basic",
+  "packageId": null,
+  "packageName": null
+}
+```
+
+---
+
+## Database Verification
+* UpdatedAt: **NULL**
+* PackageId: **NULL**
+* Status: **Active (1)**
+
+No data was modified.
+
+---
+
+## Exception
+No exception was thrown.
+
+---
+
+## Result
+✅ Passed
+
+
