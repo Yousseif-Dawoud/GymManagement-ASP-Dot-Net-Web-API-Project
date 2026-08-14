@@ -240,3 +240,56 @@ No exception was thrown.
 ✅ Passed
 
 
+---------------------------------
+
+
+# Test Case #6 - Get Member By Invalid Id
+
+## Objective
+Verify that the API returns **404 Not Found** when requesting a member that does not exist.
+
+---
+
+## Endpoint
+GET /api/Members/123456
+
+---
+
+## Expected Result
+* Status Code: **404 Not Found**
+* Throws `NotFoundException`.
+* Returns the standard API error response.
+* No changes should occur in the database.
+
+---
+
+## Actual Result
+Status Code:
+404 Not Found
+Response:
+```json
+{
+  "success": false,
+  "message": "Member was not found.",
+  "data": null,
+  "errors": null,
+  "statusCode": 404
+}
+```
+
+---
+
+## Database Verification
+No changes were made to the database.
+
+---
+
+## Exception
+`NotFoundException` was thrown and handled successfully by `GlobalExceptionMiddleware`.
+
+---
+
+## Result
+✅ Passed
+
+
