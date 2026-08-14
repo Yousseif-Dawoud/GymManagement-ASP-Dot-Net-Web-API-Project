@@ -293,3 +293,60 @@ No changes were made to the database.
 ✅ Passed
 
 
+---------------------------------
+
+# Test Case #7 - Route Constraint Validation (Negative Member Id)
+
+## Objective
+Verify that the API rejects invalid route values (negative member IDs) before reaching the Controller by using ASP.NET Core Route Constraints.
+
+---
+
+## Endpoint
+GET /api/Members/-1
+
+---
+
+## Route Constraint
+```csharp id="r9k2d1"
+[HttpGet("{memberId:int:min(1)}")]
+```
+
+---
+
+## Expected Result
+* The request should be rejected because the route parameter must be greater than or equal to **1**.
+* The request must **not** reach the Controller.
+* The Service layer must **not** execute.
+* The Database must **not** be queried.
+
+---
+
+## Actual Result
+* The request was rejected successfully.
+* The Controller was never executed.
+* No database query was performed.
+* The API did not attempt to search for a member with an invalid ID.
+
+---
+
+## Refactoring Applied
+Before:
+```csharp id="qv2r4e"
+[HttpGet("{memberId:int}")]
+```
+
+After:
+```csharp id="n8m6sj"
+[HttpGet("{memberId:int:min(1)}")]
+```
+
+The same improvement was applied to all endpoints that receive `memberId`.
+
+---
+
+## Result
+✅ Passed
+
+
+
