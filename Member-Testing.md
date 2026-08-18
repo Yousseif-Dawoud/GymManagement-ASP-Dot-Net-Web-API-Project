@@ -349,4 +349,63 @@ The same improvement was applied to all endpoints that receive `memberId`.
 ✅ Passed
 
 
+---------------------------------
+
+## Test Case #8 - Get All Members Without Filters
+
+### Objective
+Verify that the API successfully retrieves all members when no search or filter parameters are provided.
+
+### Endpoint
+`GET /api/members`
+
+### Request
+No query parameters were provided.
+
+### Expected Result
+* Status Code: `200 OK`
+* Return a paginated result.
+* `PageNumber` should be `1`.
+* `PageSize` should be `10`.
+* `TotalCount` should reflect the total number of members.
+* `Items` should contain the available members.
+* No database modification should occur.
+
+### Actual Result
+**Status Code:** `200 OK`
+**Response:**
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "fullName": "Ahmed Mohamed",
+      "phone": "01012345678",
+      "status": "Active",
+      "membershipPlanType": "Basic",
+      "packageName": null,
+      "membershipEndDate": "2026-09-12"
+    }
+  ],
+  "pageNumber": 1,
+  "pageSize": 10,
+  "totalCount": 1
+}
+```
+
+### Database Verification
+* No new member was inserted.
+* No existing member was updated.
+* No member was deleted.
+* Database state remained unchanged.
+
+### Exceptions
+No exception occurred.
+
+### Result
+✅ **PASSED**
+
+--------------------------------
+
+
 
