@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Postman", "Postman", "{195A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{F803090D-F7BF-4F0E-9C2D-AC05E65D22D6}"
 	ProjectSection(SolutionItems) = preProject
+		Seed-Members.sql = Seed-Members.sql
 		Seed-MembershipPlans.sql = Seed-MembershipPlans.sql
 	EndProjectSection
 EndProject
