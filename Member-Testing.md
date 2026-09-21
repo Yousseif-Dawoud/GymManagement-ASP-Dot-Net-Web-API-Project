@@ -407,5 +407,106 @@ No exception occurred.
 
 --------------------------------
 
+## Test Data Preparation — Members
+
+Before starting the pagination and filtering test scenarios, additional member records were created to provide a realistic dataset for testing.
+
+### Purpose
+
+The purpose of this step is to prepare enough and sufficiently varied member data to test:
+
+* Pagination
+* Search
+* Membership status filtering
+* Membership plan filtering
+* Combination filters
+* Empty-result scenarios
+
+### Existing Data
+
+Member ID `1` already existed in the database:
+
+* **Full Name:** Ahmed Mohamed
+* **Phone:** 01012345678
+* **Email:** [ahmed@gmail.com](mailto:ahmed@gmail.com)
+* **Gender:** Male
+* **Membership Plan:** Basic
+* **Status:** Active
+
+### Additional Members Created
+
+The following 11 members were added successfully through the `POST /api/members` endpoint using Swagger:
+
+| ID | Full Name       | Gender | Membership Plan | Status  |
+| -: | --------------- | ------ | --------------- | ------- |
+|  2 | Ali Hassan      | Male   | Basic           | Active  |
+|  3 | Omar Khaled     | Male   | Premium         | Active  |
+|  4 | Mohamed Adel    | Male   | Basic           | Frozen  |
+|  5 | Youssef Ibrahim | Male   | Premium         | Active  |
+|  6 | Karim Ahmed     | Male   | Basic           | Expired |
+|  7 | Sara Mohamed    | Female | Premium         | Active  |
+|  8 | Menna Ali       | Female | Basic           | Frozen  |
+|  9 | Nour Khaled     | Female | Premium         | Active  |
+| 10 | Mahmoud Samir   | Male   | Basic           | Active  |
+| 11 | Hossam Tarek    | Male   | Premium         | Expired |
+| 12 | Mariam Adel     | Female | Basic           | Active  |
+
+### Data Distribution
+
+After adding the records, the test dataset contains **12 members** in total.
+
+#### Membership Status Distribution
+
+| Status    |  Count |
+| --------- | -----: |
+| Active    |      8 |
+| Frozen    |      2 |
+| Expired   |      2 |
+| **Total** | **12** |
+
+#### Membership Plan Distribution
+
+| Membership Plan |  Count |
+| --------------- | -----: |
+| Basic           |      6 |
+| Premium         |      6 |
+| **Total**       | **12** |
+
+### Membership Dates
+
+The newly created members use the following membership period:
+
+* **Membership Start Date:** `2026-09-20`
+* **Membership End Date:** `2027-09-20`
+
+This dataset provides sufficient variation for the upcoming pagination and filtering scenarios.
+
+### Verification
+
+The members were created successfully through the API, and the resulting records were available in the database.
+
+Expected total member count:
+
+```sql
+SELECT COUNT(*) AS TotalMembers
+FROM Members;
+```
+
+Expected result:
+
+```text
+TotalMembers = 12
+```
+
+### Result
+
+**Status: PASS**
+
+The database now contains the required test dataset for the upcoming member search and pagination tests.
+
+
+
+--------------------------------
+
 
 
