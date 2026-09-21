@@ -58,19 +58,20 @@ public class MemberRepository : GenericRepository<Member>, IMemberRepository
 
         // 6. Apply Pagination + Projection to MemberListItem
         var members = await query
-                    .OrderBy(m => m.FullName)
-                    .Skip((request.PageNumber - 1) * request.PageSize)
-                    .Take(request.PageSize)
-                    .Select(m => new MemberListItem(
-                        m.Id,
-                        m.FullName,
-                        m.Phone,
-                        m.Status,
-                        m.MembershipPlan.Type,
-                        m.Package != null ? m.Package.Name : null,
-                        m.MembershipEndDate
-                    ))
-                    .ToListAsync(ct);
+                     .OrderBy(m => m.FullName)
+                     .ThenBy(m => m.Id)
+                     .Skip((request.PageNumber - 1) * request.PageSize)
+                     .Take(request.PageSize)
+                     .Select(m => new MemberListItem(
+                         m.Id,
+                         m.FullName,
+                         m.Phone,
+                         m.Status,
+                         m.MembershipPlan.Type,
+                         m.Package != null ? m.Package.Name : null,
+                         m.MembershipEndDate
+                     ))
+                     .ToListAsync(ct);
 
 
 
