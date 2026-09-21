@@ -510,3 +510,294 @@ The database now contains the required test dataset for the upcoming member sear
 
 
 
+## Test Case #9 — Pagination
+
+### Test Case Information
+
+| Field         | Details                                                                                        |
+| ------------- | ---------------------------------------------------------------------------------------------- |
+| Test Case ID  | TC-09                                                                                          |
+| Feature       | Member Pagination                                                                              |
+| Endpoint      | `GET /api/members`                                                                             |
+| Method        | `GET`                                                                                          |
+| Objective     | Verify that members are correctly divided into pages according to `pageNumber` and `pageSize`. |
+| Preconditions | Database is available, migrations are applied, API is running, and 12 members exist.           |
+
+---
+
+### 1. Test Scenario
+
+Retrieve the first page of members with a page size of 5.
+
+### Request
+
+```http
+GET /api/members?pageNumber=1&pageSize=5
+```
+
+---
+
+### 2. Expected Result
+
+The API should:
+
+* Return `200 OK`.
+* Return exactly 5 members in the `items` collection.
+* Return `pageNumber = 1`.
+* Return `pageSize = 5`.
+* Return `totalCount = 12`.
+* Order members by `FullName`.
+* Use `Id` as a secondary ordering criterion to provide deterministic ordering when multiple members have the same name.
+* Not modify any database records.
+
+Expected pagination distribution:
+
+```text
+Total Members = 12
+Page Size     = 5
+
+Page 1 → 5 Members
+Page 2 → 5 Members
+Page 3 → 2 Members
+```
+
+---
+
+### 3. Prediction Before Execution
+
+Before executing the request, the expected response was predicted as follows:
+
+```text
+Status Code  → 200 OK
+Items Count  → 5
+Page Number  → 1
+Page Size    → 5
+Total Count  → 12
+```
+
+It was also predicted that the members would be ordered alphabetically by `FullName`.
+
+---
+
+### 4. Actual Result
+
+The API returned:
+
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "fullName": "Ahmed Mohamed",
+      "phone": "01012345678",
+      "status": "Active",
+      "membershipPlanType": "Basic",
+      "packageName": null,
+      "membershipEndDate": "2026-09-12"
+    },
+    {
+      "id": 2,
+      "fullName": "Ali Hassan",
+      "phone": "01012345679",
+      "status": "Active",
+      "membershipPlanType": "Basic",
+      "packageName": null,
+      "membershipEndDate": "2027-09-20"
+    },
+    {
+      "id": 11,
+      "fullName": "Hossam Tarek",
+      "phone": "01012345688",
+      "status": "Active",
+      "membershipPlanType": "Premium",
+      "packageName": null,
+      "membershipEndDate": "2027-09-20"
+    },
+    {
+      "id": 6,
+      "fullName": "Karim Ahmed",
+      "phone": "01012345683",
+      "status": "Active",
+      "membershipPlanType": "Basic",
+      "packageName": null,
+      "membershipEndDate": "2027-09-20"
+    },
+    {
+      "id": 10,
+      "fullName": "Mahmoud Samir",
+      "phone": "01012345687",
+      "status": "Active",
+      "membershipPlanType": "Basic",
+      "packageName": null,
+      "membershipEndDate": "2027-09-20"
+    }
+  ],
+  "pageNumber": 1,
+  "pageSize": 5,
+  "totalCount": 12
+}
+```
+
+### Result Verification
+
+| Verification          | Expected |   Actual | Result |
+| --------------------- | -------: | -------: | ------ |
+| HTTP Status           |      200 |      200 | PASS   |
+| Items Count           |        5 |        5 | PASS   |
+| Page Number           |        1 |        1 | PASS   |
+| Page Size             |        5 |        5 | PASS   |
+| Total Count           |       12 |       12 | PASS   |
+| Ordering              | FullName | FullName | PASS   |
+| Database Modification |     None |     None | PASS   |
+
+---
+
+### 5. Why `totalCount = 12`
+
+`totalCount` represents the total number of records matching the applied filters before pagination is applied.
+
+The repository calculates it before `Skip()` and `Take()`:
+
+```csharp
+var totalCount = await query.CountAsync(ct);
+```
+
+Pagination is then applied:
+
+```csharp
+.Skip((request.PageNumber - 1) * request.PageSize)
+.Take(request.PageSize)
+```
+
+Therefore:
+
+```text
+Total Members = 12
+Page Size     = 5
+```
+
+results in:
+
+```text
+Page 1 → 5 items
+Page 2 → 5 items
+Page 3 → 2 items
+```
+
+while `totalCount` remains `12` for all three pages.
+
+---
+
+### 6. Implementation Verification
+
+The search query follows this processing order:
+
+```text
+WHERE
+  ↓
+COUNT
+  ↓
+ORDER
+  ↓
+PAGINATION
+  ↓
+SELECT
+```
+
+The default ordering is:
+
+```csharp
+.OrderBy(m => m.FullName)
+.ThenBy(m => m.Id)
+```
+
+`FullName` is the primary ordering criterion, while `Id` acts as a deterministic tie-breaker when multiple members have the same name.
+
+Pagination is applied after ordering:
+
+```csharp
+.Skip((request.PageNumber - 1) * request.PageSize)
+.Take(request.PageSize)
+```
+
+This ensures that pagination is applied to a consistently ordered dataset.
+
+---
+
+### 7. Refactoring During Testing
+
+During the test review, the existing ordering:
+
+```csharp
+.OrderBy(m => m.FullName)
+```
+
+was reviewed.
+
+The ordering was functionally correct, but a secondary ordering criterion was added to make the result deterministic when multiple members have the same `FullName`.
+
+Refactored implementation:
+
+```csharp
+.OrderBy(m => m.FullName)
+.ThenBy(m => m.Id)
+```
+
+The test was executed again after the refactoring.
+
+### Retest Result
+
+The response remained correct and matched the expected pagination behavior.
+
+**Retest: PASS**
+
+---
+
+### 8. Database Verification
+
+The database was checked after executing the request:
+
+```sql
+SELECT
+    Id,
+    FullName,
+    Status,
+    MembershipPlanId
+FROM Members
+ORDER BY Id;
+```
+
+The database contained 12 members and no records were modified by the `GET` request.
+
+### Database Result
+
+**No database modification detected.**
+
+---
+
+### 9. Exceptions
+
+No exception occurred during execution.
+
+---
+
+### 10. Final Result
+
+**Status: PASS**
+
+The pagination functionality works correctly.
+
+The test successfully verified:
+
+* Correct HTTP status code.
+* Correct page size.
+* Correct page number.
+* Correct total record count.
+* Correct alphabetical ordering.
+* Deterministic secondary ordering using member ID.
+* Correct pagination behavior.
+* No database modification.
+* Successful retest after refactoring.
+
+
+--------------------------------
