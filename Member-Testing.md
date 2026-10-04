@@ -801,3 +801,375 @@ The test successfully verified:
 
 
 --------------------------------
+
+
+# Test Case #10 — Member Search
+
+## Objective
+
+Verify that the Members Search endpoint correctly searches members using the `SearchTerm` query parameter and supports:
+
+* Full name search
+* Case-insensitive search
+* Email search
+* Phone search
+* Partial search
+* No-result scenarios
+* Leading/trailing spaces
+* Search combined with pagination
+
+The test also verifies that filtering and pagination work together correctly and that the returned `totalCount` represents the number of records matching the search criteria before pagination.
+
+---
+
+## Endpoint
+
+```http
+GET /api/members
+```
+
+### Query Parameter
+
+```text
+searchTerm
+```
+
+The search implementation checks the provided term against:
+
+```csharp
+m.FullName.ToLower().Contains(searchTerm) ||
+m.Email.ToLower().Contains(searchTerm) ||
+m.Phone.Contains(searchTerm)
+```
+
+The search term is normalized using:
+
+```csharp
+request.SearchTerm.Trim().ToLower();
+```
+
+Therefore, the search supports partial matching and is case-insensitive for `FullName` and `Email`.
+
+---
+
+# Scenario 10.1 — Search by Full Name
+
+### Request
+
+```http
+GET /api/members?searchTerm=Karim
+```
+
+### Expected Result
+
+* `200 OK`
+* One matching member
+* Member ID = `6`
+* Member Name = `Karim Ahmed`
+* `totalCount = 1`
+* Default pagination values are used:
+
+  * `pageNumber = 1`
+  * `pageSize = 10`
+
+### Result
+
+**PASS**
+
+The API correctly returned the member whose full name contains `Karim`.
+
+---
+
+# Scenario 10.2 — Case-Insensitive Search
+
+### Test
+
+Search using a different letter casing, for example:
+
+```http
+GET /api/members?searchTerm=karim
+```
+
+### Expected Result
+
+The result should be equivalent to searching for:
+
+```text
+Karim
+```
+
+### Result
+
+**PASS**
+
+The API correctly handled the search without depending on the casing of the search term.
+
+---
+
+# Scenario 10.3 — Search by Email
+
+### Test
+
+Search using part of a member's email address.
+
+### Expected Result
+
+The API should return the member whose email contains the provided search term.
+
+### Result
+
+**PASS**
+
+The search correctly checks the member's email using partial matching.
+
+---
+
+# Scenario 10.4 — Search by Phone
+
+### Test
+
+Search using a member's phone number.
+
+Example:
+
+```http
+GET /api/members?searchTerm=01012345683
+```
+
+### Expected Result
+
+The API should return:
+
+```text
+Karim Ahmed
+```
+
+with:
+
+```text
+Id = 6
+```
+
+### Result
+
+**PASS**
+
+The API correctly searched members using their phone numbers.
+
+---
+
+# Scenario 10.5 — Partial Search
+
+### Test
+
+Search using a term that can match multiple members.
+
+Example:
+
+```http
+GET /api/members?searchTerm=Ahmed
+```
+
+### Expected Result
+
+The API should return every member whose:
+
+* Full name
+* Email
+* or phone
+
+contains the provided search term.
+
+### Result
+
+**PASS**
+
+The test confirmed that the implementation performs substring matching using `Contains()` rather than exact matching.
+
+---
+
+# Scenario 10.6 — Search With No Matching Results
+
+### Test
+
+Use a search term that does not exist.
+
+Example:
+
+```http
+GET /api/members?searchTerm=ZZZZZZ
+```
+
+### Expected Result
+
+```text
+200 OK
+```
+
+with:
+
+```json
+{
+    "items": [],
+    "totalCount": 0
+}
+```
+
+The API should not return `404 Not Found`, because the endpoint itself exists and the search simply produced zero matching records.
+
+### Result
+
+**PASS**
+
+The API correctly returned an empty result set with `totalCount = 0`.
+
+---
+
+# Scenario 10.7 — Search With Leading and Trailing Spaces
+
+### Test
+
+Search using whitespace around the search term.
+
+Example:
+
+```http
+GET /api/members?searchTerm=   Karim
+```
+
+### Expected Result
+
+The result should be equivalent to searching for:
+
+```text
+Karim
+```
+
+because the implementation trims the search term before applying the filter.
+
+### Result
+
+**PASS**
+
+The API correctly handled leading/trailing whitespace.
+
+---
+
+# Scenario 10.8 — Search Combined With Pagination
+
+### Test
+
+Combine the search filter with pagination.
+
+Example:
+
+```http
+GET /api/members?searchTerm=Ahmed&pageNumber=1&pageSize=1
+```
+
+### Expected Behavior
+
+The API should:
+
+1. Filter members according to `searchTerm`.
+2. Calculate `totalCount` from the filtered result.
+3. Order the filtered members.
+4. Apply pagination.
+5. Return only the requested page.
+
+Conceptually:
+
+```text
+Search Filter
+     ↓
+Count Matching Records
+     ↓
+Order
+     ↓
+Skip / Take
+     ↓
+Select
+```
+
+### Result
+
+**PASS**
+
+The test confirmed that pagination is applied after the search filter and that `totalCount` represents the number of matching records before pagination.
+
+---
+
+# Verification Summary
+
+| Scenario | Description             | Result |
+| -------- | ----------------------- | ------ |
+| 10.1     | Search by Full Name     | PASS   |
+| 10.2     | Case-Insensitive Search | PASS   |
+| 10.3     | Search by Email         | PASS   |
+| 10.4     | Search by Phone         | PASS   |
+| 10.5     | Partial Search          | PASS   |
+| 10.6     | No Matching Results     | PASS   |
+| 10.7     | Leading/Trailing Spaces | PASS   |
+| 10.8     | Search + Pagination     | PASS   |
+
+---
+
+# Implementation Verification
+
+The search implementation follows the expected query pipeline:
+
+```text
+WHERE
+  ↓
+COUNT
+  ↓
+ORDER
+  ↓
+PAGINATION
+  ↓
+SELECT
+```
+
+The search term is normalized before filtering:
+
+```csharp
+var searchTerm = request.SearchTerm.Trim().ToLower();
+```
+
+The filter uses partial matching:
+
+```csharp
+m.FullName.ToLower().Contains(searchTerm) ||
+m.Email.ToLower().Contains(searchTerm) ||
+m.Phone.Contains(searchTerm)
+```
+
+Pagination is applied after filtering and counting:
+
+```csharp
+.Skip((request.PageNumber - 1) * request.PageSize)
+.Take(request.PageSize)
+```
+
+This ensures that `totalCount` represents the total number of records matching the current search criteria rather than the number of records returned on the current page.
+
+---
+
+# Final Result
+
+**Test Case #10 — Member Search: PASS ✅**
+
+All planned search scenarios were executed successfully.
+
+The endpoint correctly supports:
+
+* Full-name search
+* Email search
+* Phone search
+* Case-insensitive search
+* Partial matching
+* Empty search results
+* Whitespace normalization
+* Search combined with pagination
+
+No unexpected database modifications or side effects were observed during the tests.
