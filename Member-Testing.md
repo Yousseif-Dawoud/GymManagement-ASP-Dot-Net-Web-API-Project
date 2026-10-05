@@ -1173,3 +1173,8 @@ The endpoint correctly supports:
 * Search combined with pagination
 
 No unexpected database modifications or side effects were observed during the tests.
+
+
+-----------------------------
+
+
